@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>FGO ダメージ計算表</title>
+        <!--<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />-->
+        <link rel="stylesheet" type="text/css" href="css/style-mobile.css" />
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">-->
+        <!--<link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet">-->
+        <!--<link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script async charset="UTF-8" type="text/javascript" src="js/mobile.js"></script>
+        <!--<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+    </head>
+    <body>
+        <div id="main">
+            <!-- タブ -->
+            <div id="tab">
+                <input type="radio" name="tab-radio" checked>
+                <label class="tab-label">#1</label>
+
+                <input type="radio" name="tab-radio">
+                <label class="tab-label">#2</label>
+
+                <input type="radio" name="tab-radio">
+                <label class="tab-label">#3</label>
+
+                <input type="radio" name="tab-radio">
+                <label class="tab-label">#4</label>
+
+                <input type="radio" name="tab-radio">
+                <label class="tab-label">#5</label>
+                
+                <!-- アンダーバー -->
+                <div id="select-tab-cover"></div>
+            </div>
+
+            <!-- カルーセル -->
+            <div id="contents">
+                <div class="contents-item" id="calc_0">
+                    <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7"><input type="number" id="atk_0" value="0" max="99999" min="0" step="500" class="form-control atk"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>倍率</th>
+                            <td colspan="3"><input type="number" id="np_dmg_0" value="500" max="3000" min="0" step="50" class="form-control np_dmg"></td>
+                            <th>種類</th>
+                            <td colspan="3">
+                                <select id="np_kind_0" class="form-control np_kind">
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>攻撃<br>バフ</th>
+                            <td colspan="7"><input type="number" id="atk_buff_0" value="0" max="400" min="-100" step="10" class="form-control atk_buff"></td>
+                        </tr>
+                        <tr>
+                            <th>Bバフ</tg>
+                            <td colspan="3"><input type="number" id="b_card_buff_0" value="0" max="400" min="-100" step="10" class="form-control b_card_buff"></td>
+                            <th>クリ<br>バフ</tg>
+                            <td colspan="3"><input type="number" id="b_card_cri_buff_0" value="0" max="500" min="-100" step="10" class="form-control b_card_cri_buff"></td>
+                        </tr>
+                        <tr>
+                            <th>Aバフ</th>
+                            <td colspan="3"><input type="number" id="a_card_buff_0" value="0" max="400" min="-100" step="10" class="form-control a_card_buff"></td>
+                            <th>クリ<br>バフ</th>
+                            <td colspan="3"><input type="number" id="a_card_cri_buff_0" value="0" max="500" min="-100" step="10" class="form-control a_card_cri_buff"></td>
+                        </tr>
+                        <tr>
+                            <th>Qバフ</th>
+                            <td colspan="3"><input type="number" id="q_card_buff_0" value="0" max="400" min="-100" step="10" class="form-control q_card_buff"></td>
+                            <th>クリ<br>バフ</th>
+                            <td colspan="3"><input type="number" id="q_card_cri_buff_0" value="0" max="500" min="-100" step="10" class="form-control q_card_cri_buff"></td>
+                        </tr>
+                        <tr>
+                            <th>クリ<br>バフ</th>
+                            <td colspan="3"><input type="number" id="cri_buff_0" value="0" max="500" min="0" step="1" class="form-control cri_buff"></td>
+                            <th>EX<br>バフ</th>
+                            <td colspan="3"><input type="number" id="ex_atk_buff_0" value="0" max="50" min="0" step="1" class="form-control ex_atk_buff"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>バフ</th>
+                            <td colspan="3"><input type="number" id="np_buff_0" value="0" max="500" min="-100" step="10" class="form-control np_buff"></td>
+                            <th>宝具<br>特攻</th>
+                            <td colspan="3"><input type="number" id="supereffective_np_0" value="100" max="500" min="0" step="50" class="form-control supereffective_np"></td>
+                        </tr>
+                        <tr>
+                            <th>特攻<br>威力</th>
+                            <td colspan="3"><input type="number" id="supereffective_buff_0" value="0" max="1000" min="0" step="10" class="form-control supereffective_buff"></td>
+                            <th>固定<br>ダメ</th>
+                            <td colspan="3"><input type="number" id="fixed_dmg_0" value="0" max="9999" min="0" step="10" class="form-control fixed_dmg"></td>
+                        </tr>
+                        <tr>
+                            <th>足跡</th>
+                            <td colspan="2" class="col_footprints"><input type="number" id="b_footprints_0" value="0" max="500" min="0" step="25" class="form-control b_footprints"></td>
+                            <td colspan="2" class="col_footprints"><input type="number" id="a_footprints_0" value="0" max="500" min="0" step="25" class="form-control a_footprints"></td>
+                            <td colspan="2" class="col_footprints"><input type="number" id="q_footprints_0" value="0" max="500" min="0" step="25" class="form-control q_footprints"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>特殊<br>耐性</th>
+                            <td colspan="7"><input type="number" id="special_def_0" value="0" max="100" min="-100" step="10" class="form-control special_def"></td>
+                        </tr>
+                        <tr>
+                            <th>クラス<br>相性</th>
+                            <td colspan="3">
+                                <select id="class_affinity_0" class="form-control class_affinity">
+                                    <option value="0.5">0.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2.0" selected>2.0</option>
+                                </select>
+                            </td>
+                            <th>補正</th>
+                            <td colspan="3">
+                                <select id="class_servant_0" class="form-control class_servant">
+                                    <option value="0.90">0.9</option>
+                                    <option value="0.95">0.95</option>
+                                    <option value="1.00" selected>1.0</option>
+                                    <option value="1.05">1.05</option>
+                                    <option value="1.10">1.1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>属性<br>相性</th>
+                            <td colspan="3">
+                                <select id="attribute_affinity_0" class="form-control attribute_affinity">
+                                    <option value="0.9">0.9</option>
+                                    <option value="1.0" selected>1.0</option>
+                                    <option value="1.1">1.1</option>
+                                </select>
+                            </td>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <th>1st</th>
+                            <td colspan="3">
+                                <select id="card_1st_0" class="form-control card_1st">
+                                    <option value="NP" selected>N</option>
+                                    <option value="B">B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                            <th>1st<br>クリ</th>
+                            <td colspan="3">
+                                <select id="card_1st_cri_0" class="form-control card_1st_cri">
+                                    <option value="Y">あり</option>
+                                    <option value="N">なし</option>
+                                    <option value="zero">0</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>2nd</th>
+                            <td colspan="3">
+                                <select id="card_2nd_0" class="form-control card_2nd">
+                                    <option value="NP">N</option>
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                            <th>2nd<br>クリ</th>
+                            <td colspan="3">
+                                <select id="card_2nd_cri_0" class="form-control card_2nd_cri">
+                                    <option value="Y">あり</option>
+                                    <option value="N">なし</option>
+                                    <option value="zero">0</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>3rd</th>
+                            <td colspan="3">
+                                <select id="card_3rd_0" class="form-control card_3rd">
+                                    <option value="NP">N</option>
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                            <th>3rd<br>クリ</th>
+                            <td colspan="3">
+                                <select id="card_3rd_cri_0" class="form-control card_3rd_cri">
+                                    <option value="Y">あり</option>
+                                    <option value="N">なし</option>
+                                    <option value="zero">0</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>EX</th>
+                            <td colspan="3">
+                                <select id="ex_cri_0" class="form-control ex_cri">
+                                    <option value="N">通常</option>
+                                    <option value="zero">0</option>
+                                </select>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </div>
+                <div class="contents-item" id="calc_1">
+aaa
+                </div>
+                <div class="contents-item" id="calc_2">
+aaa
+                </div>
+                <div class="contents-item" id="calc_3">
+aaa
+                </div>
+                <div class="contents-item" id="calc_4">
+aaa
+                </div>
+            </div>
+
+            <div class="floating-result">
+                <table id="clac-result-tbl" class="table table-striped clac-result-tbl">
+                    <tr>
+                        <th class="col_result_header"></th>
+                        <th class="col_result_damage">1st</th>
+                        <th class="col_result_damage">2nd</th>
+                        <th class="col_result_damage">3rd</th>
+                        <th class="col_result_damage">EX</th>
+                        <th class="col_result_damage">トータル</th>
+                    </tr>
+                    <tr>
+                        <td><label>最小</label></td>
+                        <td><output type="number" id="dmg_min_1st_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_min_2nd_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_min_3rd_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_min_ex_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_min_total_0" class="dmg_result">0</output></td>
+                    </tr>
+                    <tr>
+                        <td><label>平均</label></td>
+                        <td><output type="number" id="dmg_ave_1st_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_ave_2nd_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_ave_3rd_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_ave_ex_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_ave_total_0" class="dmg_result">0</output></td>
+                    </tr>
+                    <tr>
+                        <td><label>最大</label></td>
+                        <td><output type="number" id="dmg_max_1st_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_max_2nd_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_max_3rd_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_max_ex_0" class="dmg_result">0</output></td>
+                        <td><output type="number" id="dmg_max_total_0" class="dmg_result">0</output></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
