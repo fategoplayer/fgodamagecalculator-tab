@@ -7,6 +7,7 @@ $(function(){
     const tabNum = tabRadio.length;
     const cover = $("#select-tab-cover")[0];
     const contents = $("#contents")[0];
+    const result = $("footer-result")[0];
     let coverX = 100;
     let loopHandler;
     
@@ -49,7 +50,7 @@ $(function(){
         // アンダーバーを連動して動かす。
         coverX = 100 * e.target.scrollLeft / contents.offsetWidth;
         cover.style.transform = "translateX(" + coverX + "%)";
-    
+
         // スクロール量を取得してラジオボタンに反映させる
         if (e.target.scrollLeft < contents.offsetWidth / 2) {
             tabRadio[0].checked = true;
@@ -66,29 +67,19 @@ $(function(){
         else {
             tabRadio[4].checked = true;
         }
+        // スクロール終了時に再計算
+        if (coverX % 100 == "0"){
+            calcMain(coverX / 100);
+        }
     }
 
     /**
      * 表計算フォーカス遷移イベント
      */
-     $("#calc-inp-tbl").on("blur", "input", function () {
+     $(document).on("blur", "input", function () {
         var recNumber = this.id.split("_")[this.id.split("_").length - 1];
 
-        /*
-        window.scrollBy(0,1);
-        setTimeout(function(){window.scrollBy(0,-1)},100);
-        */
-       /*
-        requestAnimationFrame(function(){return true;});
-        requestAnimationFrame(function(){return true;});
-        */
-
-        //$(".floating-result").css({"display":""});
-        //$(".floating-result").css({"position":"absolute"});
-        //$(".floating-result").css({"bottom":""});
         setTimeout(function(){
-            //$(".floating-result").css({"position":""});
-            //$(".floating-result").css({"bottom":""});
             console.log($(".floating-result")[0].offsetHeight);
             /*$(".floating-result").hide().show();*/
         },100);
@@ -120,18 +111,12 @@ $(function(){
     });
 
     
-    $("#calc-inp-tbl").on("focus", "input", function () {
+    $(document).on("focus", "input", function () {
 
         this.select();
 
-        /*
-        $(".floating-result").css({"position":"absolute"});
-        $(".floating-result").css({"bottom":(window.scrollY) + "px"});
-*/
-/*
-$(".floating-result").css({"display":"none"});
-*/
     });
+
     
 
 });
@@ -593,21 +578,21 @@ $(".floating-result").css({"display":"none"});
     };
 
     // 計算結果を反映
-    $("#dmg_min_1st_" + recNumber).val(Number(rounddown(dmg_min_1st,0)).toLocaleString());
-    $("#dmg_ave_1st_" + recNumber).val(Number(rounddown(dmg_ave_1st,0)).toLocaleString());
-    $("#dmg_max_1st_" + recNumber).val(Number(rounddown(dmg_max_1st,0)).toLocaleString());
-    $("#dmg_min_2nd_" + recNumber).val(Number(rounddown(dmg_min_2nd,0)).toLocaleString());
-    $("#dmg_ave_2nd_" + recNumber).val(Number(rounddown(dmg_ave_2nd,0)).toLocaleString());
-    $("#dmg_max_2nd_" + recNumber).val(Number(rounddown(dmg_max_2nd,0)).toLocaleString());
-    $("#dmg_min_3rd_" + recNumber).val(Number(rounddown(dmg_min_3rd,0)).toLocaleString());
-    $("#dmg_ave_3rd_" + recNumber).val(Number(rounddown(dmg_ave_3rd,0)).toLocaleString());
-    $("#dmg_max_3rd_" + recNumber).val(Number(rounddown(dmg_max_3rd,0)).toLocaleString());
-    $("#dmg_min_ex_" + recNumber).val(Number(rounddown(dmg_min_EX,0)).toLocaleString());
-    $("#dmg_ave_ex_" + recNumber).val(Number(rounddown(dmg_ave_EX,0)).toLocaleString());
-    $("#dmg_max_ex_" + recNumber).val(Number(rounddown(dmg_max_EX,0)).toLocaleString());
-    $("#dmg_min_total_" + recNumber).val(Number(Math.floor(dmg_min_1st) + Math.floor(dmg_min_2nd) + Math.floor(dmg_min_3rd) + Math.floor(dmg_min_EX)).toLocaleString());
-    $("#dmg_ave_total_" + recNumber).val(Number(Math.floor(dmg_ave_1st) + Math.floor(dmg_ave_2nd) + Math.floor(dmg_ave_3rd) + Math.floor(dmg_ave_EX)).toLocaleString());
-    $("#dmg_max_total_" + recNumber).val(Number(Math.floor(dmg_max_1st) + Math.floor(dmg_max_2nd) + Math.floor(dmg_max_3rd) + Math.floor(dmg_max_EX)).toLocaleString());
+    $("#dmg_min_1st").val(Number(rounddown(dmg_min_1st,0)).toLocaleString());
+    $("#dmg_ave_1st").val(Number(rounddown(dmg_ave_1st,0)).toLocaleString());
+    $("#dmg_max_1st").val(Number(rounddown(dmg_max_1st,0)).toLocaleString());
+    $("#dmg_min_2nd").val(Number(rounddown(dmg_min_2nd,0)).toLocaleString());
+    $("#dmg_ave_2nd").val(Number(rounddown(dmg_ave_2nd,0)).toLocaleString());
+    $("#dmg_max_2nd").val(Number(rounddown(dmg_max_2nd,0)).toLocaleString());
+    $("#dmg_min_3rd").val(Number(rounddown(dmg_min_3rd,0)).toLocaleString());
+    $("#dmg_ave_3rd").val(Number(rounddown(dmg_ave_3rd,0)).toLocaleString());
+    $("#dmg_max_3rd").val(Number(rounddown(dmg_max_3rd,0)).toLocaleString());
+    $("#dmg_min_ex").val(Number(rounddown(dmg_min_EX,0)).toLocaleString());
+    $("#dmg_ave_ex").val(Number(rounddown(dmg_ave_EX,0)).toLocaleString());
+    $("#dmg_max_ex").val(Number(rounddown(dmg_max_EX,0)).toLocaleString());
+    $("#dmg_min_total").val(Number(Math.floor(dmg_min_1st) + Math.floor(dmg_min_2nd) + Math.floor(dmg_min_3rd) + Math.floor(dmg_min_EX)).toLocaleString());
+    $("#dmg_ave_total").val(Number(Math.floor(dmg_ave_1st) + Math.floor(dmg_ave_2nd) + Math.floor(dmg_ave_3rd) + Math.floor(dmg_ave_EX)).toLocaleString());
+    $("#dmg_max_total").val(Number(Math.floor(dmg_max_1st) + Math.floor(dmg_max_2nd) + Math.floor(dmg_max_3rd) + Math.floor(dmg_max_EX)).toLocaleString());
 
 }
 
