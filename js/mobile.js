@@ -70,6 +70,7 @@ $(function(){
         // スクロール終了時に再計算
         if (coverX % 100 == "0"){
             calcMain(coverX / 100);
+            console.log($(".floating-result")[0].offsetHeight);
         }
     }
 
