@@ -7,7 +7,6 @@ $(function(){
     const tabNum = tabRadio.length;
     const cover = $("#select-tab-cover")[0];
     const contents = $("#contents")[0];
-    const result = $("footer-result")[0];
     let coverX = 100;
     let loopHandler;
     
@@ -70,7 +69,6 @@ $(function(){
         // スクロール終了時に再計算
         if (coverX % 100 == "0"){
             calcMain(coverX / 100);
-            console.log($(".floating-result")[0].offsetHeight);
         }
     }
 
@@ -579,21 +577,21 @@ $(function(){
     };
 
     // 計算結果を反映
-    $("#dmg_min_1st").val(Number(rounddown(dmg_min_1st,0)).toLocaleString());
-    $("#dmg_ave_1st").val(Number(rounddown(dmg_ave_1st,0)).toLocaleString());
-    $("#dmg_max_1st").val(Number(rounddown(dmg_max_1st,0)).toLocaleString());
-    $("#dmg_min_2nd").val(Number(rounddown(dmg_min_2nd,0)).toLocaleString());
-    $("#dmg_ave_2nd").val(Number(rounddown(dmg_ave_2nd,0)).toLocaleString());
-    $("#dmg_max_2nd").val(Number(rounddown(dmg_max_2nd,0)).toLocaleString());
-    $("#dmg_min_3rd").val(Number(rounddown(dmg_min_3rd,0)).toLocaleString());
-    $("#dmg_ave_3rd").val(Number(rounddown(dmg_ave_3rd,0)).toLocaleString());
-    $("#dmg_max_3rd").val(Number(rounddown(dmg_max_3rd,0)).toLocaleString());
-    $("#dmg_min_ex").val(Number(rounddown(dmg_min_EX,0)).toLocaleString());
-    $("#dmg_ave_ex").val(Number(rounddown(dmg_ave_EX,0)).toLocaleString());
-    $("#dmg_max_ex").val(Number(rounddown(dmg_max_EX,0)).toLocaleString());
-    $("#dmg_min_total").val(Number(Math.floor(dmg_min_1st) + Math.floor(dmg_min_2nd) + Math.floor(dmg_min_3rd) + Math.floor(dmg_min_EX)).toLocaleString());
-    $("#dmg_ave_total").val(Number(Math.floor(dmg_ave_1st) + Math.floor(dmg_ave_2nd) + Math.floor(dmg_ave_3rd) + Math.floor(dmg_ave_EX)).toLocaleString());
-    $("#dmg_max_total").val(Number(Math.floor(dmg_max_1st) + Math.floor(dmg_max_2nd) + Math.floor(dmg_max_3rd) + Math.floor(dmg_max_EX)).toLocaleString());
+    $("#dmg_min_1st").text(Number(rounddown(dmg_min_1st,0)).toLocaleString());
+    $("#dmg_ave_1st").text(Number(rounddown(dmg_ave_1st,0)).toLocaleString());
+    $("#dmg_max_1st").text(Number(rounddown(dmg_max_1st,0)).toLocaleString());
+    $("#dmg_min_2nd").text(Number(rounddown(dmg_min_2nd,0)).toLocaleString());
+    $("#dmg_ave_2nd").text(Number(rounddown(dmg_ave_2nd,0)).toLocaleString());
+    $("#dmg_max_2nd").text(Number(rounddown(dmg_max_2nd,0)).toLocaleString());
+    $("#dmg_min_3rd").text(Number(rounddown(dmg_min_3rd,0)).toLocaleString());
+    $("#dmg_ave_3rd").text(Number(rounddown(dmg_ave_3rd,0)).toLocaleString());
+    $("#dmg_max_3rd").text(Number(rounddown(dmg_max_3rd,0)).toLocaleString());
+    $("#dmg_min_ex").text(Number(rounddown(dmg_min_EX,0)).toLocaleString());
+    $("#dmg_ave_ex").text(Number(rounddown(dmg_ave_EX,0)).toLocaleString());
+    $("#dmg_max_ex").text(Number(rounddown(dmg_max_EX,0)).toLocaleString());
+    $("#dmg_min_total").text(Number(Math.floor(dmg_min_1st) + Math.floor(dmg_min_2nd) + Math.floor(dmg_min_3rd) + Math.floor(dmg_min_EX)).toLocaleString());
+    $("#dmg_ave_total").text(Number(Math.floor(dmg_ave_1st) + Math.floor(dmg_ave_2nd) + Math.floor(dmg_ave_3rd) + Math.floor(dmg_ave_EX)).toLocaleString());
+    $("#dmg_max_total").text(Number(Math.floor(dmg_max_1st) + Math.floor(dmg_max_2nd) + Math.floor(dmg_max_3rd) + Math.floor(dmg_max_EX)).toLocaleString());
 
 }
 
