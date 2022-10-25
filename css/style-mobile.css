@@ -49,7 +49,7 @@ input[name="tab-radio"]:checked+.tab-label {
   scroll-snap-type: x mandatory; /* スクロールをピッタリ止める */
   -ms-overflow-style: none;
   scrollbar-width: none;
-  margin-bottom: 118px;
+  margin-bottom: 117px;
 }
 
 #contents::-webkit-scrollbar {
