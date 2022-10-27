@@ -116,10 +116,14 @@ input[name="tab-radio"]:checked+.tab-label {
 .calc-inp-tbl td {
   height: 100%;
 }
-.calc-inp-tbl th {
+.calc-inp-tbl th, .prob-inp-tbl th {
   width: 12.5%;
   text-align: center;
   vertical-align: middle;
+}
+.prob-inp-tbl td {
+  height: 100%;
+  width: 37.5%;
 }
 
 .clac-result-tbl th, .clac-result-tbl td, .prob-inp-tbl th, .prob-inp-tbl td {
