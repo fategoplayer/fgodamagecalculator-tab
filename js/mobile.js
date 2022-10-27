@@ -807,7 +807,7 @@ function rounddown(num, digit) {
         if (card_1st != "NP") {
             $("#fixed_1st").val(fixed_dmg + advanced_fixed_dmg_1st + atk * bchain_bonus / 100);
         } else {
-            $("#fixed_1st").val("0");
+            $("#fixed_1st").val(fixed_dmg);
         }
     };
 
@@ -819,7 +819,7 @@ function rounddown(num, digit) {
         if (card_2nd != "NP") {
             $("#fixed_2nd").val(fixed_dmg + advanced_fixed_dmg_2nd + atk * bchain_bonus / 100);
         } else {
-            $("#fixed_2nd").val("0");
+            $("#fixed_2nd").val(fixed_dmg);
         }
     };
 
@@ -831,7 +831,7 @@ function rounddown(num, digit) {
         if (card_3rd != "NP") {
             $("#fixed_3rd").val(fixed_dmg + advanced_fixed_dmg_3rd + atk * bchain_bonus / 100);
         } else {
-            $("#fixed_3rd").val("0");
+            $("#fixed_3rd").val(fixed_dmg);
         }
     };
     
@@ -852,19 +852,31 @@ function rounddown(num, digit) {
  * 撃破率計算
  */
 function calcProb() {
-    var dmg_1st, dmg_2nd, dmg_3rd, dmg_Ex, buff_1st, buff_2nd, buff_3rd, buff_Ex;
+    var dmg_1st, dmg_2nd, dmg_3rd, dmg_Ex, buff_1st, buff_2nd, buff_3rd, buff_Ex, enemy_hp;
 
-    dmg_1st = parseFloat($("#dmg_1st").val());
-    dmg_2nd = parseFloat($("#dmg_2nd").val());
-    dmg_3rd = parseFloat($("#dmg_3rd").val());
-    dmg_Ex = parseFloat($("#dmg_Ex").val());
-    $("#dmg_total").val(Number(parseFloat($("#dmg_1st").val()) + parseFloat($("#dmg_2nd").val()) + parseFloat($("#dmg_3rd").val()) + parseFloat($("#dmg_Ex").val())).toLocaleString());
+    dmg_1st = 0;
+    dmg_2nd = 0;
+    dmg_3rd = 0;
+    dmg_Ex = 0;
+    buff_1st = 0;
+    buff_2nd = 0;
+    buff_3rd = 0;
+    buff_Ex = 0;
+    enemy_hp = 0;
+
+    if ($("#dmg_1st").val() != "") { dmg_1st = parseFloat($("#dmg_1st").val()); }
+    if ($("#dmg_2nd").val() != "") { dmg_2nd = parseFloat($("#dmg_2nd").val()); }
+    if ($("#dmg_3rd").val() != "") { dmg_3rd = parseFloat($("#dmg_3rd").val()); }
+    if ($("#dmg_Ex").val() != "") { dmg_Ex = parseFloat($("#dmg_Ex").val()); }
+    $("#dmg_total").text(Number(dmg_1st + dmg_2nd + dmg_3rd + dmg_Ex).toLocaleString());
  
-    buff_1st = parseFloat($("#fixed_1st").val());
-    buff_2nd = parseFloat($("#fixed_2nd").val());
-    buff_3rd = parseFloat($("#fixed_3rd").val());
-    buff_Ex = parseFloat($("#fixed_Ex").val());
-    $("#fixed_total").val(Number(parseFloat($("#fixed_1st").val()) + parseFloat($("#fixed_2nd").val()) + parseFloat($("#fixed_3rd").val()) + parseFloat($("#fixed_Ex").val())).toLocaleString());
+    if ($("#fixed_1st").val() != "") { buff_1st = parseFloat($("#fixed_1st").val()); }
+    if ($("#fixed_2nd").val() != "") { buff_2nd = parseFloat($("#fixed_2nd").val()); }
+    if ($("#fixed_3rd").val() != "") { buff_3rd = parseFloat($("#fixed_3rd").val()); }
+    if ($("#fixed_Ex").val() != "") { buff_Ex = parseFloat($("#fixed_Ex").val()); }
+    $("#fixed_total").text(Number(buff_1st + buff_2nd + buff_3rd + buff_Ex).toLocaleString());
+
+    if ($("#enemy_hp").val() != "") { enemy_hp = parseFloat($("#enemy_hp").val()); }
 
     var rand = new Array(200);
     for (let cnt = 0; cnt < 200; cnt++) {
@@ -882,7 +894,6 @@ function calcProb() {
     first.sort((a, b) => a - b);
     second.sort((a, b) => a - b);
 
-    var enemy_hp = parseFloat($("#enemy_hp").val());
     var ret = 0;
     for (let x = 0; x < 40000; x++) {
         ret += 40000 - binarySearch(second, enemy_hp - first[x]);
