@@ -1,9 +1,52 @@
 @charset "UTF-8";
 
+@media screen and (min-width:480px) {
+  /*　for iPhone Landscape　(iPhone 横)　*/
+  #main {
+    width: 100%;
+  }
+  #tab {
+    width: 100vw;
+  }
+  .floating-result {
+    width: 100%;
+  }
+
+}
+@media screen and (min-width:768px) and ( max-width:1024px) {
+  /*　for iPad 　*/
+  #main {
+    width: 75%;
+    margin: auto;
+  }
+  #tab {
+    width: 100%;
+    margin: auto;
+  }
+  .floating-result {
+    width: 75%;
+    margin: auto;
+  }
+}
+@media screen and (min-width:1024px) {
+  /*　for PC　*/
+  #main {
+    width: 60%;
+    margin: auto;
+  }
+  #tab {
+    width: 100%;
+    margin: auto;
+  }
+  .floating-result {
+    width: 60%;
+    margin: auto;
+  }
+}
+
 
 /* タブ */
 #tab {
-  width: 100vw;
   display: flex;
   height: 48px;
   background-color: white;
@@ -65,7 +108,7 @@ input[name="tab-radio"]:checked+.tab-label {
 }
 
 
-.calc-inp-tbl, .clac-result-tbl {
+.calc-inp-tbl, .clac-result-tbl, .prob-inp-tbl {
   width: 100%;
   font-size: 11px;
   white-space: nowrap;
@@ -79,7 +122,7 @@ input[name="tab-radio"]:checked+.tab-label {
   vertical-align: middle;
 }
 
-.clac-result-tbl th, .clac-result-tbl td {
+.clac-result-tbl th, .clac-result-tbl td, .prob-inp-tbl th, .prob-inp-tbl td {
   text-align: center;
 }
 .col_result_header {
@@ -126,10 +169,9 @@ output {
 }
 */
 
-
 .floating-result {
-  width: 100%;
-  height: 135px;
+
+  height: 134px;
   background-color: white;
   border-style: solid none none none;
   border-color: #DDD;
