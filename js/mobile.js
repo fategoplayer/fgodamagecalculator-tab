@@ -9,11 +9,12 @@ $(function(){
     const contents = $("#contents")[0];
     let coverX = 100;
     let loopHandler;
+    let enableTab = "0";
     
     // ラベルクリック時にスライドアニメーションを実行
-    for (let i = 0; i < tabNum; i++) {
-        tabLabel[i].onclick = () => {
-            tabSlideAnim(i);
+    for (let cnt = 0; cnt < tabNum; cnt++) {
+        tabLabel[cnt].onclick = () => {
+            tabSlideAnim(cnt);
         }
     }
     
@@ -53,22 +54,43 @@ $(function(){
         // スクロール量を取得してラジオボタンに反映させる
         if (e.target.scrollLeft < contents.offsetWidth / 2) {
             tabRadio[0].checked = true;
+            if (enableTab != "0") {
+                // 再計算
+                calcMain("0");
+            }
+            enableTab = "0";
         }
         else if (e.target.scrollLeft < contents.offsetWidth * 3 / 2) {
             tabRadio[1].checked = true;
+            if (enableTab != "1") {
+                // 再計算
+                calcMain("1");
+            }
+            enableTab = "1";
         }
         else if (e.target.scrollLeft < contents.offsetWidth * 5 / 2) {
             tabRadio[2].checked = true;
+            if (enableTab != "2") {
+                // 再計算
+                calcMain("2");
+            }
+            enableTab = "2";
         }
         else if (e.target.scrollLeft < contents.offsetWidth * 7 / 2) {
             tabRadio[3].checked = true;
+            if (enableTab != "3") {
+                // 再計算
+                calcMain("3");
+            }
+            enableTab = "3";
         }
         else {
             tabRadio[4].checked = true;
-        }
-        // スクロール終了時に再計算
-        if (coverX % 100 == "0"){
-            calcMain(coverX / 100);
+            if (enableTab != "4") {
+                // 再計算
+                calcMain("4");
+            }
+            enableTab = "4";
         }
     }
 
@@ -76,7 +98,7 @@ $(function(){
      * 表計算フォーカス遷移イベント
      */
      $(document).on("blur", "input", function () {
-        var recNumber = this.id.split("_")[this.id.split("_").length - 1];
+        var recNumber = $("input[name='tab-radio']:checked").val();
 
         setTimeout(function(){
             console.log($(".floating-result")[0].offsetHeight);
@@ -84,6 +106,7 @@ $(function(){
         },100);
 
         // ブランクなら0を入れる
+        /*
         if (this.value == "") {
             if (this.id == "atk_" + recNumber) {
                 // atkがブランクなら初期化
@@ -93,6 +116,7 @@ $(function(){
                 this.value = "0";
             }
         }
+        */
 
         // 対象行を計算
         calcMain(recNumber);
@@ -102,7 +126,7 @@ $(function(){
      * セレクトボックス変更イベント
      */
      $(document).on("change", "select", function () {
-        var recNumber = this.id.split("_")[this.id.split("_").length - 1];
+        var recNumber = $("input[name='tab-radio']:checked").val();
 
         // 対象行を計算
         calcMain(recNumber);
@@ -112,11 +136,36 @@ $(function(){
     
     $(document).on("focus", "input", function () {
 
-        this.select();
+        /*this.select();*/
 
     });
 
-    
+    /**
+     * 撃破率画面表示イベント
+     */
+    $("#probModal").on("show.bs.modal", function () {
+
+        var recNumber = $("input[name='tab-radio']:checked").val();
+        
+        // パラメーターを撃破率画面にコピー
+        copyProbInput(recNumber);
+
+        // 撃破率計算
+        calcProb();
+
+        return true;
+
+    });
+
+    /**
+     * 撃破率フォーカス遷移イベント
+     */
+     $("#prob-inp-tbl").on("blur", "input", function () {
+
+        // 撃破率計算
+        calcProb();
+
+    });
 
 });
 
@@ -126,50 +175,48 @@ $(function(){
  */
  function clearParam(row) {
 
-    $("#atk_" + row).val("0");
-    $("#np_dmg_" + row).val("500");
+    $("#atk_" + row).val("");
+    $("#np_dmg_" + row).val("");
     $("#np_kind_" + row).val("B");
-    $("#atk_buff_" + row).val("0");
-    $("#b_card_buff_" + row).val("0");
-    $("#b_card_cri_buff_" + row).val("0");
-    $("#a_card_buff_" + row).val("0");
-    $("#a_card_cri_buff_" + row).val("0");
-    $("#q_card_buff_" + row).val("0");
-    $("#q_card_cri_buff_" + row).val("0");
-    $("#cri_buff_" + row).val("0");
-    $("#np_buff_" + row).val("0");
-    $("#ex_atk_buff_" + row).val("0");
-    $("#supereffective_buff_" + row).val("0");
+    $("#atk_buff_" + row).val("");
+    $("#b_card_buff_" + row).val("");
+    $("#b_card_cri_buff_" + row).val("");
+    $("#a_card_buff_" + row).val("");
+    $("#a_card_cri_buff_" + row).val("");
+    $("#q_card_buff_" + row).val("");
+    $("#q_card_cri_buff_" + row).val("");
+    $("#cri_buff_" + row).val("");
+    $("#np_buff_" + row).val("");
+    $("#ex_atk_buff_" + row).val("");
+    $("#supereffective_buff_" + row).val("");
     $("#supereffective_np_" + row).val("100");
-    $("#fixed_dmg_" + row).val("0");
-    $("#b_footprints_" + row).val("0");
-    $("#a_footprints_" + row).val("0");
-    $("#q_footprints_" + row).val("0");
-    $("#special_def_" + row).val("0");
-    /*
-    $("#advanced_atk_buff_1st_" + row).val("0");
-    $("#advanced_atk_buff_2nd_" + row).val("0");
-    $("#advanced_atk_buff_3rd_" + row).val("0");
-    $("#advanced_atk_buff_Ex_" + row).val("0");
-    $("#advanced_card_buff_1st_" + row).val("0");
-    $("#advanced_card_buff_2nd_" + row).val("0");
-    $("#advanced_card_buff_3rd_" + row).val("0");
-    $("#advanced_cri_buff_1st_" + row).val("0");
-    $("#advanced_cri_buff_2nd_" + row).val("0");
-    $("#advanced_cri_buff_3rd_" + row).val("0");
-    $("#advanced_supereffective_buff_1st_" + row).val("0");
-    $("#advanced_supereffective_buff_2nd_" + row).val("0");
-    $("#advanced_supereffective_buff_3rd_" + row).val("0");
-    $("#advanced_supereffective_buff_Ex_" + row).val("0");
-    $("#advanced_fixed_dmg_1st_" + row).val("0");
-    $("#advanced_fixed_dmg_2nd_" + row).val("0");
-    $("#advanced_fixed_dmg_3rd_" + row).val("0");
-    $("#advanced_fixed_dmg_Ex_" + row).val("0");
-    $("#advanced_special_def_1st_" + row).val("0");
-    $("#advanced_special_def_2nd_" + row).val("0");
-    $("#advanced_special_def_3rd_" + row).val("0");
-    $("#advanced_special_def_Ex_" + row).val("0");
-    */
+    $("#fixed_dmg_" + row).val("");
+    $("#b_footprints_" + row).val("");
+    $("#a_footprints_" + row).val("");
+    $("#q_footprints_" + row).val("");
+    $("#special_def_" + row).val("");
+    $("#advanced_atk_buff_1st_" + row).val("");
+    $("#advanced_atk_buff_2nd_" + row).val("");
+    $("#advanced_atk_buff_3rd_" + row).val("");
+    $("#advanced_atk_buff_Ex_" + row).val("");
+    $("#advanced_card_buff_1st_" + row).val("");
+    $("#advanced_card_buff_2nd_" + row).val("");
+    $("#advanced_card_buff_3rd_" + row).val("");
+    $("#advanced_cri_buff_1st_" + row).val("");
+    $("#advanced_cri_buff_2nd_" + row).val("");
+    $("#advanced_cri_buff_3rd_" + row).val("");
+    $("#advanced_supereffective_buff_1st_" + row).val("");
+    $("#advanced_supereffective_buff_2nd_" + row).val("");
+    $("#advanced_supereffective_buff_3rd_" + row).val("");
+    $("#advanced_supereffective_buff_Ex_" + row).val("");
+    $("#advanced_fixed_dmg_1st_" + row).val("");
+    $("#advanced_fixed_dmg_2nd_" + row).val("");
+    $("#advanced_fixed_dmg_3rd_" + row).val("");
+    $("#advanced_fixed_dmg_Ex_" + row).val("");
+    $("#advanced_special_def_1st_" + row).val("");
+    $("#advanced_special_def_2nd_" + row).val("");
+    $("#advanced_special_def_3rd_" + row).val("");
+    $("#advanced_special_def_Ex_" + row).val("");
     $("#class_affinity_" + row).val("2.0");
     $("#attribute_affinity_" + row).val("1.0");
     $("#class_servant_" + row).val("1.00");
@@ -224,51 +271,26 @@ $(function(){
     dmg_cri_max_1st, dmg_cri_max_2nd, dmg_cri_max_3rd,
     dmg_cri_min_1st, dmg_cri_min_2nd, dmg_cri_min_3rd;
 
-    // 計算パラメーター取得
-    atk = parseFloat($("#atk_" + recNumber).val());
-    np_dmg = parseFloat($("#np_dmg_" + recNumber).val());
-    np_kind = $("#np_kind_" + recNumber).val();
-    atk_buff = parseFloat($("#atk_buff_" + recNumber).val());
-    b_card_buff = parseFloat($("#b_card_buff_" + recNumber).val());
-    b_card_cri_buff = parseFloat($("#b_card_cri_buff_" + recNumber).val());
-    a_card_buff = parseFloat($("#a_card_buff_" + recNumber).val());
-    a_card_cri_buff = parseFloat($("#a_card_cri_buff_" + recNumber).val());
-    q_card_buff = parseFloat($("#q_card_buff_" + recNumber).val());
-    q_card_cri_buff = parseFloat($("#q_card_cri_buff_" + recNumber).val());
-    cri_buff = parseFloat($("#cri_buff_" + recNumber).val());
-    np_buff = parseFloat($("#np_buff_" + recNumber).val());
-    ex_atk_buff = parseFloat($("#ex_atk_buff_" + recNumber).val());
-    supereffective_buff = parseFloat($("#supereffective_buff_" + recNumber).val());
-    supereffective_np = parseFloat($("#supereffective_np_" + recNumber).val());
-    fixed_dmg = parseFloat($("#fixed_dmg_" + recNumber).val());
-    b_footprints = parseFloat($("#b_footprints_" + recNumber).val());
-    a_footprints = parseFloat($("#a_footprints_" + recNumber).val());
-    q_footprints = parseFloat($("#q_footprints_" + recNumber).val());
-    special_def = parseFloat($("#special_def_" + recNumber).val());
-    /*
-    advanced_atk_buff_1st = parseFloat($("#advanced_atk_buff_1st_" + recNumber).val());
-    advanced_atk_buff_2nd = parseFloat($("#advanced_atk_buff_2nd_" + recNumber).val());
-    advanced_atk_buff_3rd = parseFloat($("#advanced_atk_buff_3rd_" + recNumber).val());
-    advanced_atk_buff_ex = parseFloat($("#advanced_atk_buff_Ex_" + recNumber).val());
-    advanced_card_buff_1st = parseFloat($("#advanced_card_buff_1st_" + recNumber).val());
-    advanced_card_buff_2nd = parseFloat($("#advanced_card_buff_2nd_" + recNumber).val());
-    advanced_card_buff_3rd = parseFloat($("#advanced_card_buff_3rd_" + recNumber).val());
-    advanced_cri_buff_1st = parseFloat($("#advanced_cri_buff_1st_" + recNumber).val());
-    advanced_cri_buff_2nd = parseFloat($("#advanced_cri_buff_2nd_" + recNumber).val());
-    advanced_cri_buff_3rd = parseFloat($("#advanced_cri_buff_3rd_" + recNumber).val());
-    advanced_supereffective_buff_1st = parseFloat($("#advanced_supereffective_buff_1st_" + recNumber).val());
-    advanced_supereffective_buff_2nd = parseFloat($("#advanced_supereffective_buff_2nd_" + recNumber).val());
-    advanced_supereffective_buff_3rd = parseFloat($("#advanced_supereffective_buff_3rd_" + recNumber).val());
-    advanced_supereffective_buff_ex = parseFloat($("#advanced_supereffective_buff_Ex_" + recNumber).val());
-    advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + recNumber).val());
-    advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + recNumber).val());
-    advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + recNumber).val());
-    advanced_fixed_dmg_ex = parseFloat($("#advanced_fixed_dmg_Ex_" + recNumber).val());
-    advanced_special_def_1st = parseFloat($("#advanced_special_def_1st_" + recNumber).val());
-    advanced_special_def_2nd = parseFloat($("#advanced_special_def_2nd_" + recNumber).val());
-    advanced_special_def_3rd = parseFloat($("#advanced_special_def_3rd_" + recNumber).val());
-    advanced_special_def_ex = parseFloat($("#advanced_special_def_Ex_" + recNumber).val());
-    */
+    // 初期化
+    atk = 0;
+    np_dmg = 0;
+    atk_buff = 0;
+    b_card_buff = 0;
+    b_card_cri_buff = 0;
+    a_card_buff = 0;
+    a_card_buffa_card_buff = 0;
+    q_card_buff = 0;
+    q_card_cri_buff = 0;
+    cri_buff = 0;
+    np_buff = 0;
+    ex_atk_buff = 0;
+    supereffective_buff = 0;
+    supereffective_np = 0;
+    fixed_dmg = 0;
+    b_footprints = 0;
+    a_footprints = 0;
+    q_footprints = 0;
+    special_def = 0;
     advanced_atk_buff_1st = 0;
     advanced_atk_buff_2nd = 0;
     advanced_atk_buff_3rd = 0;
@@ -291,6 +313,50 @@ $(function(){
     advanced_special_def_2nd = 0;
     advanced_special_def_3rd = 0;
     advanced_special_def_ex = 0;
+
+    // 計算パラメーター取得
+    if ($("#atk_" + recNumber).val() != "") { atk = parseFloat($("#atk_" + recNumber).val()); }
+    if ($("#np_dmg_" + recNumber).val() != "") { np_dmg = parseFloat($("#np_dmg_" + recNumber).val()); }
+    np_kind = $("#np_kind_" + recNumber).val();
+    if ($("#atk_buff_" + recNumber).val() != "") { atk_buff = parseFloat($("#atk_buff_" + recNumber).val()); }
+    if ($("#b_card_buff_" + recNumber).val() != "") { b_card_buff = parseFloat($("#b_card_buff_" + recNumber).val()); }
+    if ($("#b_card_cri_buff_" + recNumber).val() != "") { b_card_cri_buff = parseFloat($("#b_card_cri_buff_" + recNumber).val()); }
+    if ($("#a_card_buff_" + recNumber).val() != "") { a_card_buff = parseFloat($("#a_card_buff_" + recNumber).val()); }
+    if ($("#a_card_cri_buff_" + recNumber).val() != "") { a_card_cri_buff = parseFloat($("#a_card_cri_buff_" + recNumber).val()); }
+    if ($("#q_card_buff_" + recNumber).val() != "") { q_card_buff = parseFloat($("#q_card_buff_" + recNumber).val()); }
+    if ($("#q_card_cri_buff_" + recNumber).val() != "") { q_card_cri_buff = parseFloat($("#q_card_cri_buff_" + recNumber).val()); }
+    if ($("#cri_buff_" + recNumber).val() != "") { cri_buff = parseFloat($("#cri_buff_" + recNumber).val()); }
+    if ($("#np_buff_" + recNumber).val() != "") { np_buff = parseFloat($("#np_buff_" + recNumber).val()); }
+    if ($("#ex_atk_buff_" + recNumber).val() != "") { ex_atk_buff = parseFloat($("#ex_atk_buff_" + recNumber).val()); }
+    if ($("#supereffective_buff_" + recNumber).val() != "") { supereffective_buff = parseFloat($("#supereffective_buff_" + recNumber).val()); }
+    if ($("#supereffective_np_" + recNumber).val() != "") { supereffective_np = parseFloat($("#supereffective_np_" + recNumber).val()); }
+    if ($("#fixed_dmg_" + recNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + recNumber).val()); }
+    if ($("#b_footprints_" + recNumber).val() != "") { b_footprints = parseFloat($("#b_footprints_" + recNumber).val()); }
+    if ($("#a_footprints_" + recNumber).val() != "") { a_footprints = parseFloat($("#a_footprints_" + recNumber).val()); }
+    if ($("#q_footprints_" + recNumber).val() != "") { q_footprints = parseFloat($("#q_footprints_" + recNumber).val()); }
+    if ($("#special_def_" + recNumber).val() != "") { special_def = parseFloat($("#special_def_" + recNumber).val()); }
+    if ($("#advanced_atk_buff_1st_" + recNumber).val() != "") { advanced_atk_buff_1st = parseFloat($("#advanced_atk_buff_1st_" + recNumber).val()); }
+    if ($("#advanced_atk_buff_2nd_" + recNumber).val() != "") { advanced_atk_buff_2nd = parseFloat($("#advanced_atk_buff_2nd_" + recNumber).val()); }
+    if ($("#advanced_atk_buff_3rd_" + recNumber).val() != "") { advanced_atk_buff_3rd = parseFloat($("#advanced_atk_buff_3rd_" + recNumber).val()); }
+    if ($("#advanced_atk_buff_Ex_" + recNumber).val() != "") { advanced_atk_buff_ex = parseFloat($("#advanced_atk_buff_Ex_" + recNumber).val()); }
+    if ($("#advanced_card_buff_1st_" + recNumber).val() != "") { advanced_card_buff_1st = parseFloat($("#advanced_card_buff_1st_" + recNumber).val()); }
+    if ($("#advanced_card_buff_2nd_" + recNumber).val() != "") { advanced_card_buff_2nd = parseFloat($("#advanced_card_buff_2nd_" + recNumber).val()); }
+    if ($("#advanced_card_buff_3rd_" + recNumber).val() != "") { advanced_card_buff_3rd = parseFloat($("#advanced_card_buff_3rd_" + recNumber).val()); }
+    if ($("#advanced_cri_buff_1st_" + recNumber).val() != "") { advanced_cri_buff_1st = parseFloat($("#advanced_cri_buff_1st_" + recNumber).val()); }
+    if ($("#advanced_cri_buff_2nd_" + recNumber).val() != "") { advanced_cri_buff_2nd = parseFloat($("#advanced_cri_buff_2nd_" + recNumber).val()); }
+    if ($("#advanced_cri_buff_3rd_" + recNumber).val() != "") { advanced_cri_buff_3rd = parseFloat($("#advanced_cri_buff_3rd_" + recNumber).val()); }
+    if ($("#advanced_supereffective_buff_1st_" + recNumber).val() != "") { advanced_supereffective_buff_1st = parseFloat($("#advanced_supereffective_buff_1st_" + recNumber).val()); }
+    if ($("#advanced_supereffective_buff_2nd_" + recNumber).val() != "") { advanced_supereffective_buff_2nd = parseFloat($("#advanced_supereffective_buff_2nd_" + recNumber).val()); }
+    if ($("#advanced_supereffective_buff_3rd_" + recNumber).val() != "") { advanced_supereffective_buff_3rd = parseFloat($("#advanced_supereffective_buff_3rd_" + recNumber).val()); }
+    if ($("#advanced_supereffective_buff_Ex_" + recNumber).val() != "") { advanced_supereffective_buff_ex = parseFloat($("#advanced_supereffective_buff_Ex_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_1st_" + recNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_2nd_" + recNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_3rd_" + recNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_Ex_" + recNumber).val() != "") { advanced_fixed_dmg_ex = parseFloat($("#advanced_fixed_dmg_Ex_" + recNumber).val()); }
+    if ($("#advanced_special_def_1st_" + recNumber).val() != "") { advanced_special_def_1st = parseFloat($("#advanced_special_def_1st_" + recNumber).val()); }
+    if ($("#advanced_special_def_2nd_" + recNumber).val() != "") { advanced_special_def_2nd = parseFloat($("#advanced_special_def_2nd_" + recNumber).val()); }
+    if ($("#advanced_special_def_3rd_" + recNumber).val() != "") { advanced_special_def_3rd = parseFloat($("#advanced_special_def_3rd_" + recNumber).val()); }
+    if ($("#advanced_special_def_Ex_" + recNumber).val() != "") { advanced_special_def_ex = parseFloat($("#advanced_special_def_Ex_" + recNumber).val()); }
     class_affinity = parseFloat($("#class_affinity_" + recNumber).val());
     attribute_affinity = parseFloat($("#attribute_affinity_" + recNumber).val());
     class_servant = parseFloat($("#class_servant_" + recNumber).val());
@@ -691,4 +757,175 @@ function calcDmg(atk, atk_buff, card_buff, cri_buff, bbonus, bbonus_all, bchain_
 function rounddown(num, digit) {
     var digitVal = Math.pow(10, digit);
     return (Math.floor(num * digitVal) / digitVal).toFixed(digit);
+}
+
+/**
+ * 計算結果を撃破率計算にコピー
+ * @param recNumber コピー対象行
+ */
+ function copyProbInput(recNumber) {
+    var card_1st, card_2nd, card_3rd, np_kind, atk, atk_b_buff, fixed_dmg,
+        advanced_fixed_dmg_1st, advanced_fixed_dmg_2nd, advanced_fixed_dmg_3rd, advanced_fixed_dmg_Ex, bchain_bonus;
+
+    atk = 0;
+    atk_b_buff = 0;
+    fixed_dmg = 0;
+    advanced_fixed_dmg_1st = 0;
+    advanced_fixed_dmg_2nd = 0;
+    advanced_fixed_dmg_3rd = 0;
+    advanced_fixed_dmg_Ex = 0;
+
+    // Bチェインボーナス分の反映
+    card_1st = $("#card_1st_" + recNumber).val()
+    card_2nd = $("#card_2nd_" + recNumber).val()
+    card_3rd = $("#card_3rd_" + recNumber).val()
+    np_kind = $("#np_kind_" + recNumber).val();
+    if ($("#atk_" + recNumber).val() != "") { atk = parseFloat($("#atk_" + recNumber).val()); }
+    if ($("#b_footprints_" + recNumber).val() != "") { atk_b_buff = parseFloat($("#b_footprints_" + recNumber).val()); }
+    if ($("#fixed_dmg_" + recNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_1st_" + recNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_2nd_" + recNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_3rd_" + recNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + recNumber).val()); }
+    if ($("#advanced_fixed_dmg_Ex_" + recNumber).val() != "") { advanced_fixed_dmg_Ex = parseFloat($("#advanced_fixed_dmg_Ex_" + recNumber).val()); }
+    bchain_bonus = 0;
+
+    if (card_1st == "NP") {
+        if (np_kind == card_2nd && card_2nd == card_3rd && np_kind == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
+    } else if(card_2nd == "NP") {
+        if (card_1st == np_kind && np_kind == card_3rd && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
+    } else if(card_3rd == "NP") {
+        if (card_1st == card_2nd && card_2nd == np_kind && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
+    } else {
+        if (card_1st == card_2nd && card_2nd == card_3rd && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
+    };
+
+    if ($("#card_1st_cri_" + recNumber).val() == "zero") {
+        $("#dmg_1st").val("0");
+        $("#fixed_1st").val("0");
+    } else {
+        $("#dmg_1st").val(Number($("#dmg_ave_1st").text().replace(/,/g, "")));
+        if (card_1st != "NP") {
+            $("#fixed_1st").val(fixed_dmg + advanced_fixed_dmg_1st + atk * bchain_bonus / 100);
+        } else {
+            $("#fixed_1st").val("0");
+        }
+    };
+
+    if ($("#card_2nd_cri_" + recNumber).val() == "zero") {
+        $("#dmg_2nd").val("0");
+        $("#fixed_2nd").val("0");
+    } else {
+        $("#dmg_2nd").val(Number($("#dmg_ave_2nd").text().replace(/,/g, "")));
+        if (card_2nd != "NP") {
+            $("#fixed_2nd").val(fixed_dmg + advanced_fixed_dmg_2nd + atk * bchain_bonus / 100);
+        } else {
+            $("#fixed_2nd").val("0");
+        }
+    };
+
+    if ($("#card_3rd_cri_" + recNumber).val() == "zero") {
+        $("#dmg_3rd").val("0");
+        $("#fixed_3rd").val("0");
+    } else {
+        $("#dmg_3rd").val(Number($("#dmg_ave_3rd").text().replace(/,/g, "")));
+        if (card_3rd != "NP") {
+            $("#fixed_3rd").val(fixed_dmg + advanced_fixed_dmg_3rd + atk * bchain_bonus / 100);
+        } else {
+            $("#fixed_3rd").val("0");
+        }
+    };
+    
+    if ($("#ex_cri_" + recNumber).val() == "zero") {
+        $("#dmg_Ex").val("0");
+        $("#fixed_Ex").val("0");
+    } else {
+        $("#dmg_Ex").val($("#dmg_ave_ex").text().replace(/,/g, ""));
+        $("#fixed_Ex").val(fixed_dmg + advanced_fixed_dmg_Ex);
+    };
+
+    $("#dmg_total").text(Number(parseFloat($("#dmg_1st").val()) + parseFloat($("#dmg_2nd").val()) + parseFloat($("#dmg_3rd").val()) + parseFloat($("#dmg_Ex").val())).toLocaleString());
+    $("#fixed_total").text(Number(parseFloat($("#fixed_1st").val()) + parseFloat($("#fixed_2nd").val()) + parseFloat($("#fixed_3rd").val()) + parseFloat($("#fixed_Ex").val())).toLocaleString());
+
+}
+
+/**
+ * 撃破率計算
+ */
+function calcProb() {
+    var dmg_1st, dmg_2nd, dmg_3rd, dmg_Ex, buff_1st, buff_2nd, buff_3rd, buff_Ex;
+
+    dmg_1st = parseFloat($("#dmg_1st").val());
+    dmg_2nd = parseFloat($("#dmg_2nd").val());
+    dmg_3rd = parseFloat($("#dmg_3rd").val());
+    dmg_Ex = parseFloat($("#dmg_Ex").val());
+    $("#dmg_total").val(Number(parseFloat($("#dmg_1st").val()) + parseFloat($("#dmg_2nd").val()) + parseFloat($("#dmg_3rd").val()) + parseFloat($("#dmg_Ex").val())).toLocaleString());
+ 
+    buff_1st = parseFloat($("#fixed_1st").val());
+    buff_2nd = parseFloat($("#fixed_2nd").val());
+    buff_3rd = parseFloat($("#fixed_3rd").val());
+    buff_Ex = parseFloat($("#fixed_Ex").val());
+    $("#fixed_total").val(Number(parseFloat($("#fixed_1st").val()) + parseFloat($("#fixed_2nd").val()) + parseFloat($("#fixed_3rd").val()) + parseFloat($("#fixed_Ex").val())).toLocaleString());
+
+    var rand = new Array(200);
+    for (let cnt = 0; cnt < 200; cnt++) {
+        rand[cnt] = 0.9 + 0.001 * cnt;
+    }
+
+    var first = new Array(40000);
+    var second = new Array(40000);
+    for (let x = 0; x < 200; x++) {
+        for (let y = 0; y < 200; y++) {
+            first[200 * x + y] = calc_damage(dmg_1st, buff_1st, 0, 0, 0, 0, 0, 0, rand[x]) + calc_damage(0, 0, dmg_2nd, buff_2nd, 0, 0, 0, 0, rand[y]);
+            second[200 * x + y] = calc_damage(0, 0, 0, 0, dmg_3rd, buff_3rd, 0, 0, rand[x]) + calc_damage(0, 0, 0, 0, 0, 0, dmg_Ex, buff_Ex, rand[y]);
+        }
+    }
+    first.sort((a, b) => a - b);
+    second.sort((a, b) => a - b);
+
+    var enemy_hp = parseFloat($("#enemy_hp").val());
+    var ret = 0;
+    for (let x = 0; x < 40000; x++) {
+        ret += 40000 - binarySearch(second, enemy_hp - first[x]);
+    }
+    ret = ret / (40000 * 4);
+
+    //$("#prob_result").val(Math.floor(ret) / 100 + "%")
+
+    $("#probress-prob").css("width", Math.floor(ret) / 100 + "%");
+    $("#probress-prob").attr("aria-valuenow", Math.floor(ret) / 100 + "%");
+    $("#probress-prob").text(Math.floor(ret) / 100 + "%");
+
+};
+
+/**
+ * ダメージ乱数計算
+ */
+function calc_damage(l1, s1, l2, s2, l3, s3, l4, s4, rand) {
+    return Math.floor((l1 - s1) * rand + s1) + Math.floor((l2 - s2) * rand + s2) + Math.floor((l3 - s3) * rand + s3) + Math.floor((l4 - s4) * rand + s4);
+};
+
+/**
+ * 2分探索
+ * @param arr ソート済みの探索対象配列
+ * @param target 探索する値
+ * @return 探索結果の添字 見つからなかった場合は-1を返す
+ */
+function binarySearch(arr, target) {
+
+    let min = -1;
+    let max = arr.length;
+
+    while (max - min > 1) {
+
+        let mid = Math.floor((min + max) / 2);
+
+        if (arr[mid] < target) {
+            min = mid;
+        } else {
+            max = mid;
+        }
+    }
+
+    return max;
+
 }
