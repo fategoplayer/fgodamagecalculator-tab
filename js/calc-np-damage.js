@@ -193,11 +193,15 @@ $(function(){
      */
      $("#copy-param").on("click", function () {
 
+        var tabNumber = $("input[name='tab-radio']:checked").val();
         var copy_from = $("#copy-from").val();
         var copy_to = $("#copy-to").val();
         
         // 入力値コピー
         copyParam(copy_from, copy_to);
+
+        // 対象タブを計算
+        calcMain(tabNumber);
 
         // モーダルを閉じる
         $("#tool-modal").modal("hide");
