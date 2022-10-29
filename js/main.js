@@ -157,24 +157,28 @@ $(function(){
         var tabNumber = $("input[name='tab-radio']:checked").val();
         
         // 現在表示のタブを初期値とする
-        $("#copy-to").val(tabNumber);
         $("#clear-tab-select").val(tabNumber);
 
         switch (tabNumber) {
             case "0":
                 $("#copy-from").val("0");
+                $("#copy-to").val("1");
                 break;
             case "1":
                 $("#copy-from").val("0");
+                $("#copy-to").val(tabNumber);
                 break;
             case "2":
                 $("#copy-from").val("1");
+                $("#copy-to").val(tabNumber);
                 break;
             case "3":
                 $("#copy-from").val("2");
+                $("#copy-to").val(tabNumber);
                 break;
             case "4":
                 $("#copy-from").val("3");
+                $("#copy-to").val(tabNumber);
                 break;
             default :
                 break;
