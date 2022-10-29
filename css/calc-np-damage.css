@@ -14,11 +14,11 @@
   #select-tab-cover {
     width: 20vw;
   }
+  #contents {
+    width: 100%;
+  }
   .floating-result {
     width: 100vw;
-  }
-  #contents {
-    margin-bottom: 116px;
   }
   .calc-inp-tbl, .clac-result-tbl, .prob-inp-tbl {
     font-size: 11px;
@@ -30,7 +30,7 @@
 @media screen and (min-width:1024px) {
   /*　for PC　*/
   #main {
-    width: 70%;
+    width: 100%;
     margin: auto;
   }
   .header_tab {
@@ -47,7 +47,7 @@
     width: 100%;
   }
   #contents {
-    margin-bottom: 123px;
+    width: 70%;
     margin-left: auto;
     margin-right: auto;
   }
@@ -61,9 +61,6 @@
   }
   .calc-inp-tbl, .clac-result-tbl, .prob-inp-tbl {
     font-size: 12px;
-  }
-  .floating-result {
-    height: 140px;
   }
 }
 /* モーダル表示時にズレるため修正 */
@@ -110,9 +107,8 @@ input[name="tab-radio"]:checked+.tab-label {
 #contents {
   display: flex;
   overflow-x: auto;
-  width: 100%;
   height: auto;
-  margin-top: 48px;
+  margin-top: -1px;
   scroll-snap-type: x mandatory; /* スクロールをピッタリ止める */
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -174,4 +170,7 @@ select {
 }
 a {
   text-decoration: none !important;
+}
+table {
+  margin-bottom: 3px !important;
 }

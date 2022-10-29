@@ -57,6 +57,7 @@ $(function(){
             if (enableTab != "0") {
                 // 再計算
                 calcMain("0");
+                document.activeElement.blur();
             }
             enableTab = "0";
         }
@@ -65,6 +66,7 @@ $(function(){
             if (enableTab != "1") {
                 // 再計算
                 calcMain("1");
+                document.activeElement.blur();
             }
             enableTab = "1";
         }
@@ -73,6 +75,7 @@ $(function(){
             if (enableTab != "2") {
                 // 再計算
                 calcMain("2");
+                document.activeElement.blur();
             }
             enableTab = "2";
         }
@@ -98,24 +101,24 @@ $(function(){
      * 表計算フォーカス遷移イベント
      */
      $(document).on("blur", "input", function () {
-        var recNumber = $("input[name='tab-radio']:checked").val();
+        var tabNumber = $("input[name='tab-radio']:checked").val();
 
         setTimeout(function(){
             console.log($(".floating-result")[0].offsetHeight);
         },100);
 
         // 対象行を計算
-        calcMain(recNumber);
+        calcMain(tabNumber);
     });
 
     /**
      * セレクトボックス変更イベント
      */
      $(document).on("change", "select", function () {
-        var recNumber = $("input[name='tab-radio']:checked").val();
+        var tabNumber = $("input[name='tab-radio']:checked").val();
 
         // 対象行を計算
-        calcMain(recNumber);
+        calcMain(tabNumber);
 
     });
 
@@ -124,10 +127,10 @@ $(function(){
      */
     $("#prob-modal").on("show.bs.modal", function () {
 
-        var recNumber = $("input[name='tab-radio']:checked").val();
+        var tabNumber = $("input[name='tab-radio']:checked").val();
         
         // パラメーターを撃破率画面にコピー
-        copyProbInput(recNumber);
+        copyProbInput(tabNumber);
 
         // 撃破率計算
         calcProb();
@@ -151,13 +154,32 @@ $(function(){
      */
      $("#tool-modal").on("show.bs.modal", function () {
 
-        var recNumber = $("input[name='tab-radio']:checked").val();
+        var tabNumber = $("input[name='tab-radio']:checked").val();
         
         // 現在表示のタブを初期値とする
-        $("#copy-from").val(recNumber);
-        $("#copy-to").val(recNumber);
-        $("#clear-tab-select").val(recNumber);
-        
+        $("#copy-to").val(tabNumber);
+        $("#clear-tab-select").val(tabNumber);
+
+        switch (tabNumber) {
+            case "0":
+                $("#copy-from").val("0");
+                break;
+            case "1":
+                $("#copy-from").val("0");
+                break;
+            case "2":
+                $("#copy-from").val("1");
+                break;
+            case "3":
+                $("#copy-from").val("2");
+                break;
+            case "4":
+                $("#copy-from").val("3");
+                break;
+            default :
+                break;
+        }
+
         return true;
 
     });
@@ -185,10 +207,10 @@ $(function(){
      */
     $("#clear-param").on("click", function () {
 
-        var recNumber = $("#clear-tab-select").val();
+        var tabNumber = $("#clear-tab-select").val();
         
         // 入力値クリア
-        clearParam(recNumber);
+        clearParam(tabNumber);
 
         // モーダルを閉じる
         $("#tool-modal").modal("hide");
@@ -357,9 +379,9 @@ $(function(){
 
 /**
  * 計算メイン処理
- * @param recNumber 計算対象行
+ * @param tabNumber 計算対象行
  */
- function calcMain(recNumber) {
+ function calcMain(tabNumber) {
     var atk, np_dmg, np_kind, atk_buff, b_card_buff, b_card_cri_buff, a_card_buff, a_card_cri_buff, q_card_buff, q_card_cri_buff,
     cri_buff, np_buff, ex_atk_buff, supereffective_buff, supereffective_np, fixed_dmg, b_footprints, a_footprints, q_footprints,
     special_def, advanced_atk_buff_1st, advanced_atk_buff_2nd, advanced_atk_buff_3rd, advanced_atk_buff_ex,
@@ -425,58 +447,58 @@ $(function(){
     advanced_special_def_ex = 0;
 
     // 計算パラメーター取得
-    if ($("#atk_" + recNumber).val() != "") { atk = parseFloat($("#atk_" + recNumber).val()); }
-    if ($("#np_dmg_" + recNumber).val() != "") { np_dmg = parseFloat($("#np_dmg_" + recNumber).val()); }
-    np_kind = $("#np_kind_" + recNumber).val();
-    if ($("#atk_buff_" + recNumber).val() != "") { atk_buff = parseFloat($("#atk_buff_" + recNumber).val()); }
-    if ($("#b_card_buff_" + recNumber).val() != "") { b_card_buff = parseFloat($("#b_card_buff_" + recNumber).val()); }
-    if ($("#b_card_cri_buff_" + recNumber).val() != "") { b_card_cri_buff = parseFloat($("#b_card_cri_buff_" + recNumber).val()); }
-    if ($("#a_card_buff_" + recNumber).val() != "") { a_card_buff = parseFloat($("#a_card_buff_" + recNumber).val()); }
-    if ($("#a_card_cri_buff_" + recNumber).val() != "") { a_card_cri_buff = parseFloat($("#a_card_cri_buff_" + recNumber).val()); }
-    if ($("#q_card_buff_" + recNumber).val() != "") { q_card_buff = parseFloat($("#q_card_buff_" + recNumber).val()); }
-    if ($("#q_card_cri_buff_" + recNumber).val() != "") { q_card_cri_buff = parseFloat($("#q_card_cri_buff_" + recNumber).val()); }
-    if ($("#cri_buff_" + recNumber).val() != "") { cri_buff = parseFloat($("#cri_buff_" + recNumber).val()); }
-    if ($("#np_buff_" + recNumber).val() != "") { np_buff = parseFloat($("#np_buff_" + recNumber).val()); }
-    if ($("#ex_atk_buff_" + recNumber).val() != "") { ex_atk_buff = parseFloat($("#ex_atk_buff_" + recNumber).val()); }
-    if ($("#supereffective_buff_" + recNumber).val() != "") { supereffective_buff = parseFloat($("#supereffective_buff_" + recNumber).val()); }
-    if ($("#supereffective_np_" + recNumber).val() != "") { supereffective_np = parseFloat($("#supereffective_np_" + recNumber).val()); }
-    if ($("#fixed_dmg_" + recNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + recNumber).val()); }
-    if ($("#b_footprints_" + recNumber).val() != "") { b_footprints = parseFloat($("#b_footprints_" + recNumber).val()); }
-    if ($("#a_footprints_" + recNumber).val() != "") { a_footprints = parseFloat($("#a_footprints_" + recNumber).val()); }
-    if ($("#q_footprints_" + recNumber).val() != "") { q_footprints = parseFloat($("#q_footprints_" + recNumber).val()); }
-    if ($("#special_def_" + recNumber).val() != "") { special_def = parseFloat($("#special_def_" + recNumber).val()); }
-    if ($("#advanced_atk_buff_1st_" + recNumber).val() != "") { advanced_atk_buff_1st = parseFloat($("#advanced_atk_buff_1st_" + recNumber).val()); }
-    if ($("#advanced_atk_buff_2nd_" + recNumber).val() != "") { advanced_atk_buff_2nd = parseFloat($("#advanced_atk_buff_2nd_" + recNumber).val()); }
-    if ($("#advanced_atk_buff_3rd_" + recNumber).val() != "") { advanced_atk_buff_3rd = parseFloat($("#advanced_atk_buff_3rd_" + recNumber).val()); }
-    if ($("#advanced_atk_buff_Ex_" + recNumber).val() != "") { advanced_atk_buff_ex = parseFloat($("#advanced_atk_buff_Ex_" + recNumber).val()); }
-    if ($("#advanced_card_buff_1st_" + recNumber).val() != "") { advanced_card_buff_1st = parseFloat($("#advanced_card_buff_1st_" + recNumber).val()); }
-    if ($("#advanced_card_buff_2nd_" + recNumber).val() != "") { advanced_card_buff_2nd = parseFloat($("#advanced_card_buff_2nd_" + recNumber).val()); }
-    if ($("#advanced_card_buff_3rd_" + recNumber).val() != "") { advanced_card_buff_3rd = parseFloat($("#advanced_card_buff_3rd_" + recNumber).val()); }
-    if ($("#advanced_cri_buff_1st_" + recNumber).val() != "") { advanced_cri_buff_1st = parseFloat($("#advanced_cri_buff_1st_" + recNumber).val()); }
-    if ($("#advanced_cri_buff_2nd_" + recNumber).val() != "") { advanced_cri_buff_2nd = parseFloat($("#advanced_cri_buff_2nd_" + recNumber).val()); }
-    if ($("#advanced_cri_buff_3rd_" + recNumber).val() != "") { advanced_cri_buff_3rd = parseFloat($("#advanced_cri_buff_3rd_" + recNumber).val()); }
-    if ($("#advanced_supereffective_buff_1st_" + recNumber).val() != "") { advanced_supereffective_buff_1st = parseFloat($("#advanced_supereffective_buff_1st_" + recNumber).val()); }
-    if ($("#advanced_supereffective_buff_2nd_" + recNumber).val() != "") { advanced_supereffective_buff_2nd = parseFloat($("#advanced_supereffective_buff_2nd_" + recNumber).val()); }
-    if ($("#advanced_supereffective_buff_3rd_" + recNumber).val() != "") { advanced_supereffective_buff_3rd = parseFloat($("#advanced_supereffective_buff_3rd_" + recNumber).val()); }
-    if ($("#advanced_supereffective_buff_Ex_" + recNumber).val() != "") { advanced_supereffective_buff_ex = parseFloat($("#advanced_supereffective_buff_Ex_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_1st_" + recNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_2nd_" + recNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_3rd_" + recNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_Ex_" + recNumber).val() != "") { advanced_fixed_dmg_ex = parseFloat($("#advanced_fixed_dmg_Ex_" + recNumber).val()); }
-    if ($("#advanced_special_def_1st_" + recNumber).val() != "") { advanced_special_def_1st = parseFloat($("#advanced_special_def_1st_" + recNumber).val()); }
-    if ($("#advanced_special_def_2nd_" + recNumber).val() != "") { advanced_special_def_2nd = parseFloat($("#advanced_special_def_2nd_" + recNumber).val()); }
-    if ($("#advanced_special_def_3rd_" + recNumber).val() != "") { advanced_special_def_3rd = parseFloat($("#advanced_special_def_3rd_" + recNumber).val()); }
-    if ($("#advanced_special_def_Ex_" + recNumber).val() != "") { advanced_special_def_ex = parseFloat($("#advanced_special_def_Ex_" + recNumber).val()); }
-    class_affinity = parseFloat($("#class_affinity_" + recNumber).val());
-    attribute_affinity = parseFloat($("#attribute_affinity_" + recNumber).val());
-    class_servant = parseFloat($("#class_servant_" + recNumber).val());
-    card_1st = $("#card_1st_" + recNumber).val();
-    card_1st_cri = $("#card_1st_cri_" + recNumber).val();
-    card_2nd = $("#card_2nd_" + recNumber).val();
-    card_2nd_cri = $("#card_2nd_cri_" + recNumber).val();
-    card_3rd = $("#card_3rd_" + recNumber).val();
-    card_3rd_cri = $("#card_3rd_cri_" + recNumber).val();
-    ex_cri = $("#ex_cri_" + recNumber).val();
+    if ($("#atk_" + tabNumber).val() != "") { atk = parseFloat($("#atk_" + tabNumber).val()); }
+    if ($("#np_dmg_" + tabNumber).val() != "") { np_dmg = parseFloat($("#np_dmg_" + tabNumber).val()); }
+    np_kind = $("#np_kind_" + tabNumber).val();
+    if ($("#atk_buff_" + tabNumber).val() != "") { atk_buff = parseFloat($("#atk_buff_" + tabNumber).val()); }
+    if ($("#b_card_buff_" + tabNumber).val() != "") { b_card_buff = parseFloat($("#b_card_buff_" + tabNumber).val()); }
+    if ($("#b_card_cri_buff_" + tabNumber).val() != "") { b_card_cri_buff = parseFloat($("#b_card_cri_buff_" + tabNumber).val()); }
+    if ($("#a_card_buff_" + tabNumber).val() != "") { a_card_buff = parseFloat($("#a_card_buff_" + tabNumber).val()); }
+    if ($("#a_card_cri_buff_" + tabNumber).val() != "") { a_card_cri_buff = parseFloat($("#a_card_cri_buff_" + tabNumber).val()); }
+    if ($("#q_card_buff_" + tabNumber).val() != "") { q_card_buff = parseFloat($("#q_card_buff_" + tabNumber).val()); }
+    if ($("#q_card_cri_buff_" + tabNumber).val() != "") { q_card_cri_buff = parseFloat($("#q_card_cri_buff_" + tabNumber).val()); }
+    if ($("#cri_buff_" + tabNumber).val() != "") { cri_buff = parseFloat($("#cri_buff_" + tabNumber).val()); }
+    if ($("#np_buff_" + tabNumber).val() != "") { np_buff = parseFloat($("#np_buff_" + tabNumber).val()); }
+    if ($("#ex_atk_buff_" + tabNumber).val() != "") { ex_atk_buff = parseFloat($("#ex_atk_buff_" + tabNumber).val()); }
+    if ($("#supereffective_buff_" + tabNumber).val() != "") { supereffective_buff = parseFloat($("#supereffective_buff_" + tabNumber).val()); }
+    if ($("#supereffective_np_" + tabNumber).val() != "") { supereffective_np = parseFloat($("#supereffective_np_" + tabNumber).val()); }
+    if ($("#fixed_dmg_" + tabNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + tabNumber).val()); }
+    if ($("#b_footprints_" + tabNumber).val() != "") { b_footprints = parseFloat($("#b_footprints_" + tabNumber).val()); }
+    if ($("#a_footprints_" + tabNumber).val() != "") { a_footprints = parseFloat($("#a_footprints_" + tabNumber).val()); }
+    if ($("#q_footprints_" + tabNumber).val() != "") { q_footprints = parseFloat($("#q_footprints_" + tabNumber).val()); }
+    if ($("#special_def_" + tabNumber).val() != "") { special_def = parseFloat($("#special_def_" + tabNumber).val()); }
+    if ($("#advanced_atk_buff_1st_" + tabNumber).val() != "") { advanced_atk_buff_1st = parseFloat($("#advanced_atk_buff_1st_" + tabNumber).val()); }
+    if ($("#advanced_atk_buff_2nd_" + tabNumber).val() != "") { advanced_atk_buff_2nd = parseFloat($("#advanced_atk_buff_2nd_" + tabNumber).val()); }
+    if ($("#advanced_atk_buff_3rd_" + tabNumber).val() != "") { advanced_atk_buff_3rd = parseFloat($("#advanced_atk_buff_3rd_" + tabNumber).val()); }
+    if ($("#advanced_atk_buff_Ex_" + tabNumber).val() != "") { advanced_atk_buff_ex = parseFloat($("#advanced_atk_buff_Ex_" + tabNumber).val()); }
+    if ($("#advanced_card_buff_1st_" + tabNumber).val() != "") { advanced_card_buff_1st = parseFloat($("#advanced_card_buff_1st_" + tabNumber).val()); }
+    if ($("#advanced_card_buff_2nd_" + tabNumber).val() != "") { advanced_card_buff_2nd = parseFloat($("#advanced_card_buff_2nd_" + tabNumber).val()); }
+    if ($("#advanced_card_buff_3rd_" + tabNumber).val() != "") { advanced_card_buff_3rd = parseFloat($("#advanced_card_buff_3rd_" + tabNumber).val()); }
+    if ($("#advanced_cri_buff_1st_" + tabNumber).val() != "") { advanced_cri_buff_1st = parseFloat($("#advanced_cri_buff_1st_" + tabNumber).val()); }
+    if ($("#advanced_cri_buff_2nd_" + tabNumber).val() != "") { advanced_cri_buff_2nd = parseFloat($("#advanced_cri_buff_2nd_" + tabNumber).val()); }
+    if ($("#advanced_cri_buff_3rd_" + tabNumber).val() != "") { advanced_cri_buff_3rd = parseFloat($("#advanced_cri_buff_3rd_" + tabNumber).val()); }
+    if ($("#advanced_supereffective_buff_1st_" + tabNumber).val() != "") { advanced_supereffective_buff_1st = parseFloat($("#advanced_supereffective_buff_1st_" + tabNumber).val()); }
+    if ($("#advanced_supereffective_buff_2nd_" + tabNumber).val() != "") { advanced_supereffective_buff_2nd = parseFloat($("#advanced_supereffective_buff_2nd_" + tabNumber).val()); }
+    if ($("#advanced_supereffective_buff_3rd_" + tabNumber).val() != "") { advanced_supereffective_buff_3rd = parseFloat($("#advanced_supereffective_buff_3rd_" + tabNumber).val()); }
+    if ($("#advanced_supereffective_buff_Ex_" + tabNumber).val() != "") { advanced_supereffective_buff_ex = parseFloat($("#advanced_supereffective_buff_Ex_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_1st_" + tabNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_2nd_" + tabNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_3rd_" + tabNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_Ex_" + tabNumber).val() != "") { advanced_fixed_dmg_ex = parseFloat($("#advanced_fixed_dmg_Ex_" + tabNumber).val()); }
+    if ($("#advanced_special_def_1st_" + tabNumber).val() != "") { advanced_special_def_1st = parseFloat($("#advanced_special_def_1st_" + tabNumber).val()); }
+    if ($("#advanced_special_def_2nd_" + tabNumber).val() != "") { advanced_special_def_2nd = parseFloat($("#advanced_special_def_2nd_" + tabNumber).val()); }
+    if ($("#advanced_special_def_3rd_" + tabNumber).val() != "") { advanced_special_def_3rd = parseFloat($("#advanced_special_def_3rd_" + tabNumber).val()); }
+    if ($("#advanced_special_def_Ex_" + tabNumber).val() != "") { advanced_special_def_ex = parseFloat($("#advanced_special_def_Ex_" + tabNumber).val()); }
+    class_affinity = parseFloat($("#class_affinity_" + tabNumber).val());
+    attribute_affinity = parseFloat($("#attribute_affinity_" + tabNumber).val());
+    class_servant = parseFloat($("#class_servant_" + tabNumber).val());
+    card_1st = $("#card_1st_" + tabNumber).val();
+    card_1st_cri = $("#card_1st_cri_" + tabNumber).val();
+    card_2nd = $("#card_2nd_" + tabNumber).val();
+    card_2nd_cri = $("#card_2nd_cri_" + tabNumber).val();
+    card_3rd = $("#card_3rd_" + tabNumber).val();
+    card_3rd_cri = $("#card_3rd_cri_" + tabNumber).val();
+    ex_cri = $("#ex_cri_" + tabNumber).val();
 
     bbonus_all = 0; bchain_bonus = 0; exbonus = 200;
 
@@ -871,9 +893,9 @@ function rounddown(num, digit) {
 
 /**
  * 計算結果を撃破率計算にコピー
- * @param recNumber コピー対象行
+ * @param tabNumber コピー対象タブ
  */
- function copyProbInput(recNumber) {
+ function copyProbInput(tabNumber) {
     var card_1st, card_2nd, card_3rd, np_kind, atk, atk_b_buff, fixed_dmg,
         advanced_fixed_dmg_1st, advanced_fixed_dmg_2nd, advanced_fixed_dmg_3rd, advanced_fixed_dmg_Ex, bchain_bonus;
 
@@ -886,17 +908,17 @@ function rounddown(num, digit) {
     advanced_fixed_dmg_Ex = 0;
 
     // Bチェインボーナス分の反映
-    card_1st = $("#card_1st_" + recNumber).val()
-    card_2nd = $("#card_2nd_" + recNumber).val()
-    card_3rd = $("#card_3rd_" + recNumber).val()
-    np_kind = $("#np_kind_" + recNumber).val();
-    if ($("#atk_" + recNumber).val() != "") { atk = parseFloat($("#atk_" + recNumber).val()); }
-    if ($("#b_footprints_" + recNumber).val() != "") { atk_b_buff = parseFloat($("#b_footprints_" + recNumber).val()); }
-    if ($("#fixed_dmg_" + recNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_1st_" + recNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_2nd_" + recNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_3rd_" + recNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + recNumber).val()); }
-    if ($("#advanced_fixed_dmg_Ex_" + recNumber).val() != "") { advanced_fixed_dmg_Ex = parseFloat($("#advanced_fixed_dmg_Ex_" + recNumber).val()); }
+    card_1st = $("#card_1st_" + tabNumber).val()
+    card_2nd = $("#card_2nd_" + tabNumber).val()
+    card_3rd = $("#card_3rd_" + tabNumber).val()
+    np_kind = $("#np_kind_" + tabNumber).val();
+    if ($("#atk_" + tabNumber).val() != "") { atk = parseFloat($("#atk_" + tabNumber).val()); }
+    if ($("#b_footprints_" + tabNumber).val() != "") { atk_b_buff = parseFloat($("#b_footprints_" + tabNumber).val()); }
+    if ($("#fixed_dmg_" + tabNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_1st_" + tabNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_2nd_" + tabNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_3rd_" + tabNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + tabNumber).val()); }
+    if ($("#advanced_fixed_dmg_Ex_" + tabNumber).val() != "") { advanced_fixed_dmg_Ex = parseFloat($("#advanced_fixed_dmg_Ex_" + tabNumber).val()); }
     bchain_bonus = 0;
 
     if (card_1st == "NP") {
@@ -909,7 +931,7 @@ function rounddown(num, digit) {
         if (card_1st == card_2nd && card_2nd == card_3rd && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
     };
 
-    if ($("#card_1st_cri_" + recNumber).val() == "zero") {
+    if ($("#card_1st_cri_" + tabNumber).val() == "zero") {
         $("#dmg_1st").val("0");
         $("#fixed_1st").val("0");
     } else {
@@ -921,7 +943,7 @@ function rounddown(num, digit) {
         }
     };
 
-    if ($("#card_2nd_cri_" + recNumber).val() == "zero") {
+    if ($("#card_2nd_cri_" + tabNumber).val() == "zero") {
         $("#dmg_2nd").val("0");
         $("#fixed_2nd").val("0");
     } else {
@@ -933,7 +955,7 @@ function rounddown(num, digit) {
         }
     };
 
-    if ($("#card_3rd_cri_" + recNumber).val() == "zero") {
+    if ($("#card_3rd_cri_" + tabNumber).val() == "zero") {
         $("#dmg_3rd").val("0");
         $("#fixed_3rd").val("0");
     } else {
@@ -945,7 +967,7 @@ function rounddown(num, digit) {
         }
     };
     
-    if ($("#ex_cri_" + recNumber).val() == "zero") {
+    if ($("#ex_cri_" + tabNumber).val() == "zero") {
         $("#dmg_Ex").val("0");
         $("#fixed_Ex").val("0");
     } else {

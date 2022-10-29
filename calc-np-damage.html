@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>FGO 宝具ダメージ計算</title>
+        <link rel="stylesheet" type="text/css" href="css/calc-np-damage.css">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script async charset="UTF-8" type="text/javascript" src="js/calc-np-damage.js"></script>
+    </head>
+    <body>
+        <div id="main">
+            <!-- タブ -->
+            <header class="header_tab">
+                <div id="tab">
+                    <input type="radio" name="tab-radio" value="0" checked>
+                    <label class="tab-label fs-6 fw-bold">#1</label>
+                    <input type="radio" name="tab-radio" value="1" >
+                    <label class="tab-label fs-6 fw-bold">#2</label>
+                    <input type="radio" name="tab-radio" value="2" >
+                    <label class="tab-label fs-6 fw-bold">#3</label>
+                    <input type="radio" name="tab-radio" value="3" >
+                    <label class="tab-label fs-6 fw-bold">#4</label>
+                    <input type="radio" name="tab-radio" value="4" >
+                    <label class="tab-label fs-6 fw-bold">#5</label>
+                    <!-- アンダーバー -->
+                    <div id="select-tab-cover"></div>
+                </div>
+            </header>
+
+            <!-- カルーセル -->
+            <div id="contents">
+                <!-- タブ#1 -->
+                <div class="contents-item" id="calc_0">
+                    <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <div class="d-flex align-items-center">
+                                    <input type="number" id="atk_0" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="align-middle">
+                            <th>宝具<br>倍率</th>
+                            <td colspan="3"><input type="number" id="np_dmg_0" max="3000" min="0" step="50" class="form-control np_dmg" placeholder="0"></td>
+                            <th>種類</th>
+                            <td colspan="3">
+                                <select id="np_kind_0" class="form-select np_kind">
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>攻撃<br>バフ</th>
+                            <td colspan="7"><input type="number" id="atk_buff_0" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>カード<br>バフ</tg>
+                            <td colspan="7"><input type="number" id="card_buff_0" max="400" min="-100" step="10" class="form-control card_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>バフ</th>
+                            <td colspan="7"><input type="number" id="np_buff_0" max="500" min="-100" step="10" class="form-control np_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>特攻<br>威力</th>
+                            <td colspan="7"><input type="number" id="supereffective_buff_0" max="1000" min="0" step="10" class="form-control supereffective_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>特攻</th>
+                            <td colspan="7"><input type="number" id="supereffective_np_0" value="100" max="500" min="0" step="50" class="form-control supereffective_np"></td>
+                        </tr>
+                        <tr>
+                            <th>固定<br>ダメ</th>
+                            <td colspan="7"><input type="number" id="fixed_dmg_0" max="9999" min="0" step="10" class="form-control fixed_dmg" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>クラス<br>相性</th>
+                            <td colspan="3">
+                                <select id="class_affinity_0" class="form-select class_affinity">
+                                    <option value="0.5">0.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2.0" selected>2.0</option>
+                                </select>
+                            </td>
+                            <th>クラス<br>補正</th>
+                            <td colspan="3">
+                                <select id="class_servant_0" class="form-select class_servant">
+                                    <option value="0.90">0.9</option>
+                                    <option value="0.95">0.95</option>
+                                    <option value="1.00" selected>1.0</option>
+                                    <option value="1.05">1.05</option>
+                                    <option value="1.10">1.1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- タブ#2 -->
+                <div class="contents-item" id="calc_1">
+                    <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <div class="d-flex align-items-center">
+                                    <input type="number" id="atk_1" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="align-middle">
+                            <th>宝具<br>倍率</th>
+                            <td colspan="3"><input type="number" id="np_dmg_1" max="3000" min="0" step="50" class="form-control np_dmg" placeholder="0"></td>
+                            <th>種類</th>
+                            <td colspan="3">
+                                <select id="np_kind_1" class="form-select np_kind">
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>攻撃<br>バフ</th>
+                            <td colspan="7"><input type="number" id="atk_buff_1" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>カード<br>バフ</tg>
+                            <td colspan="7"><input type="number" id="card_buff_1" max="400" min="-100" step="10" class="form-control card_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>バフ</th>
+                            <td colspan="7"><input type="number" id="np_buff_1" max="500" min="-100" step="10" class="form-control np_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>特攻<br>威力</th>
+                            <td colspan="7"><input type="number" id="supereffective_buff_1" max="1000" min="0" step="10" class="form-control supereffective_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>特攻</th>
+                            <td colspan="7"><input type="number" id="supereffective_np_1" value="100" max="500" min="0" step="50" class="form-control supereffective_np"></td>
+                        </tr>
+                        <tr>
+                            <th>固定<br>ダメ</th>
+                            <td colspan="7"><input type="number" id="fixed_dmg_1" max="9999" min="0" step="10" class="form-control fixed_dmg" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>クラス<br>相性</th>
+                            <td colspan="3">
+                                <select id="class_affinity_1" class="form-select class_affinity">
+                                    <option value="0.5">0.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2.0" selected>2.0</option>
+                                </select>
+                            </td>
+                            <th>クラス<br>補正</th>
+                            <td colspan="3">
+                                <select id="class_servant_1" class="form-select class_servant">
+                                    <option value="0.90">0.9</option>
+                                    <option value="0.95">0.95</option>
+                                    <option value="1.00" selected>1.0</option>
+                                    <option value="1.05">1.05</option>
+                                    <option value="1.10">1.1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- タブ#3 -->
+                <div class="contents-item" id="calc_2">
+                    <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <div class="d-flex align-items-center">
+                                    <input type="number" id="atk_2" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="align-middle">
+                            <th>宝具<br>倍率</th>
+                            <td colspan="3"><input type="number" id="np_dmg_2" max="3000" min="0" step="50" class="form-control np_dmg" placeholder="0"></td>
+                            <th>種類</th>
+                            <td colspan="3">
+                                <select id="np_kind_2" class="form-select np_kind">
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>攻撃<br>バフ</th>
+                            <td colspan="7"><input type="number" id="atk_buff_2" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>カード<br>バフ</tg>
+                            <td colspan="7"><input type="number" id="card_buff_2" max="400" min="-100" step="10" class="form-control card_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>バフ</th>
+                            <td colspan="7"><input type="number" id="np_buff_2" max="500" min="-100" step="10" class="form-control np_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>特攻<br>威力</th>
+                            <td colspan="7"><input type="number" id="supereffective_buff_2" max="1000" min="0" step="10" class="form-control supereffective_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>特攻</th>
+                            <td colspan="7"><input type="number" id="supereffective_np_2" value="100" max="500" min="0" step="50" class="form-control supereffective_np"></td>
+                        </tr>
+                        <tr>
+                            <th>固定<br>ダメ</th>
+                            <td colspan="7"><input type="number" id="fixed_dmg_2" max="9999" min="0" step="10" class="form-control fixed_dmg" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>クラス<br>相性</th>
+                            <td colspan="3">
+                                <select id="class_affinity_2" class="form-select class_affinity">
+                                    <option value="0.5">0.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2.0" selected>2.0</option>
+                                </select>
+                            </td>
+                            <th>クラス<br>補正</th>
+                            <td colspan="3">
+                                <select id="class_servant_2" class="form-select class_servant">
+                                    <option value="0.90">0.9</option>
+                                    <option value="0.95">0.95</option>
+                                    <option value="1.00" selected>1.0</option>
+                                    <option value="1.05">1.05</option>
+                                    <option value="1.10">1.1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- タブ#4 -->
+                <div class="contents-item" id="calc_3">
+                    <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <div class="d-flex align-items-center">
+                                    <input type="number" id="atk_3" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="align-middle">
+                            <th>宝具<br>倍率</th>
+                            <td colspan="3"><input type="number" id="np_dmg_3" max="3000" min="0" step="50" class="form-control np_dmg" placeholder="0"></td>
+                            <th>種類</th>
+                            <td colspan="3">
+                                <select id="np_kind_3" class="form-select np_kind">
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>攻撃<br>バフ</th>
+                            <td colspan="7"><input type="number" id="atk_buff_3" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>カード<br>バフ</tg>
+                            <td colspan="7"><input type="number" id="card_buff_3" max="400" min="-100" step="10" class="form-control card_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>バフ</th>
+                            <td colspan="7"><input type="number" id="np_buff_3" max="500" min="-100" step="10" class="form-control np_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>特攻<br>威力</th>
+                            <td colspan="7"><input type="number" id="supereffective_buff_3" max="1000" min="0" step="10" class="form-control supereffective_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>特攻</th>
+                            <td colspan="7"><input type="number" id="supereffective_np_3" value="100" max="500" min="0" step="50" class="form-control supereffective_np"></td>
+                        </tr>
+                        <tr>
+                            <th>固定<br>ダメ</th>
+                            <td colspan="7"><input type="number" id="fixed_dmg_3" max="9999" min="0" step="10" class="form-control fixed_dmg" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>クラス<br>相性</th>
+                            <td colspan="3">
+                                <select id="class_affinity_3" class="form-select class_affinity">
+                                    <option value="0.5">0.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2.0" selected>2.0</option>
+                                </select>
+                            </td>
+                            <th>クラス<br>補正</th>
+                            <td colspan="3">
+                                <select id="class_servant_3" class="form-select class_servant">
+                                    <option value="0.90">0.9</option>
+                                    <option value="0.95">0.95</option>
+                                    <option value="1.00" selected>1.0</option>
+                                    <option value="1.05">1.05</option>
+                                    <option value="1.10">1.1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- タブ#5 -->
+                <div class="contents-item" id="calc_4">
+                    <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <div class="d-flex align-items-center">
+                                    <input type="number" id="atk_4" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="align-middle">
+                            <th>宝具<br>倍率</th>
+                            <td colspan="3"><input type="number" id="np_dmg_4" max="3000" min="0" step="50" class="form-control np_dmg" placeholder="0"></td>
+                            <th>種類</th>
+                            <td colspan="3">
+                                <select id="np_kind_4" class="form-select np_kind">
+                                    <option value="B" selected>B</option>
+                                    <option value="A">A</option>
+                                    <option value="Q">Q</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>攻撃<br>バフ</th>
+                            <td colspan="7"><input type="number" id="atk_buff_4" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>カード<br>バフ</tg>
+                            <td colspan="7"><input type="number" id="card_buff_4" max="400" min="-100" step="10" class="form-control card_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>バフ</th>
+                            <td colspan="7"><input type="number" id="np_buff_4" max="500" min="-100" step="10" class="form-control np_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>特攻<br>威力</th>
+                            <td colspan="7"><input type="number" id="supereffective_buff_4" max="1000" min="0" step="10" class="form-control supereffective_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>宝具<br>特攻</th>
+                            <td colspan="7"><input type="number" id="supereffective_np_4" value="100" max="500" min="0" step="50" class="form-control supereffective_np"></td>
+                        </tr>
+                        <tr>
+                            <th>固定<br>ダメ</th>
+                            <td colspan="7"><input type="number" id="fixed_dmg_4" max="9999" min="0" step="10" class="form-control fixed_dmg" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>クラス<br>相性</th>
+                            <td colspan="3">
+                                <select id="class_affinity_4" class="form-select class_affinity">
+                                    <option value="0.5">0.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2.0" selected>2.0</option>
+                                </select>
+                            </td>
+                            <th>クラス<br>補正</th>
+                            <td colspan="3">
+                                <select id="class_servant_4" class="form-select class_servant">
+                                    <option value="0.90">0.9</option>
+                                    <option value="0.95">0.95</option>
+                                    <option value="1.00" selected>1.0</option>
+                                    <option value="1.05">1.05</option>
+                                    <option value="1.10">1.1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ツール -->
+            <div class="modal fade" id="tool-modal" tabindex="-1" aria-labelledby="tool-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="tool-label">ツール</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>入力値コピー</h6>
+                            <div class="d-flex align-items-center">
+                                <select class="form-select" tabindex="-1" id="copy-from">
+                                    <option value="0">#1</option>
+                                    <option value="1">#2</option>
+                                    <option value="2">#3</option>
+                                    <option value="3">#4</option>
+                                    <option value="4">#5</option>
+                                </select>
+                                <span class="align-middle">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-square-fill mx-2" viewBox="0 0 16 16">
+                                        <path d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12zm4.5-6.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5a.5.5 0 0 1 0-1z"/>
+                                    </svg>
+                                </span>
+                                <select class="form-select" tabindex="-1" id="copy-to">
+                                    <option value="0">#1</option>
+                                    <option value="1">#2</option>
+                                    <option value="2">#3</option>
+                                    <option value="3">#4</option>
+                                    <option value="4">#5</option>
+                                </select>
+                                <input type="button" class="btn btn-primary ms-2" value="コピー" id="copy-param">
+                            </div>
+                            <hr>
+                            <h6>入力値クリア</h6>
+                            <div class="d-flex align-items-center">
+                                <select class="form-select" tabindex="-1" id="clear-tab-select">
+                                    <option value="0">#1</option>
+                                    <option value="1">#2</option>
+                                    <option value="2">#3</option>
+                                    <option value="3">#4</option>
+                                    <option value="4">#5</option>
+                                </select>
+                                <input type="button" class="btn btn-primary ms-2" value="クリア" id="clear-param">
+                            </div>
+                            <hr>
+                            <h6>計算モード</h6>
+                            <div class="d-flex align-items-center">
+                                <a class="btn btn-primary ms-2" href="index.html">通常ダメージ計算</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- フッター -->
+            <footer class="position-relative floating-result mx-auto" id="footer-result">
+                <table id="clac-result-tbl" class="table clac-result-tbl mx-auto">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col_result_header"></th>
+                            <th scope="col" class="col_result_damage">天地人不利</th>
+                            <th scope="col" class="col_result_damage">天地人等倍</th>
+                            <th scope="col" class="col_result_damage">天地人有利</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle"><label class="dmg_result">最小</label></td>
+                            <td class="align-middle"><label id="dmg_min_disad" class="dmg_result">0</label></td>
+                            <td class="align-middle"><label id="dmg_min_normal" class="dmg_result">0</label></td>
+                            <td class="align-middle"><label id="dmg_min_ad" class="dmg_result">0</label></td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle"><label class="dmg_result">平均</label></td>
+                            <td class="align-middle"><label id="dmg_ave_disad" class="dmg_result">0</label></td>
+                            <td class="align-middle"><label id="dmg_ave_normal" class="dmg_result">0</label></td>
+                            <td class="align-middle"><label id="dmg_ave_ad" class="dmg_result">0</label></td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle"><label class="dmg_result">最大</label></td>
+                            <td class="align-middle"><label id="dmg_max_disad" class="dmg_result">0</label></td>
+                            <td class="align-middle"><label id="dmg_max_normal" class="dmg_result">0</label></td>
+                            <td class="align-middle"><label id="dmg_max_ad" class="dmg_result">0</label></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </div>
+    </body>
+</html>
