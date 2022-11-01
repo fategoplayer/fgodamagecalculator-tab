@@ -418,7 +418,7 @@ $(function(){
     b_card_buff = 0;
     b_card_cri_buff = 0;
     a_card_buff = 0;
-    a_card_buffa_card_buff = 0;
+    a_card_cri_buff = 0;
     q_card_buff = 0;
     q_card_cri_buff = 0;
     cri_buff = 0;
