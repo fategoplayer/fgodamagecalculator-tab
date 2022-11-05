@@ -175,3 +175,6 @@ select {
 a {
   text-decoration: none !important;
 }
+.servant_name {
+  cursor : pointer;
+}
