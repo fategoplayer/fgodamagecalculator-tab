@@ -63,7 +63,7 @@
                                     <input type="hidden" id="servant_class_0">
                                     <input type="hidden" id="servant_rare_0">
                                     <input type="hidden" id="servant_NA_0">
-                                    <input type="hidden" id="servant_SW_0">
+                                    <input type="hidden" id="servant_SR_0">
                                     <input type="hidden" id="servant_AHIT_0">
                                     <input type="hidden" id="servant_QHIT_0">
                                     <input type="hidden" id="servant_BHIT_0">
@@ -171,7 +171,7 @@
                                     <input type="hidden" id="servant_class_1">
                                     <input type="hidden" id="servant_rare_1">
                                     <input type="hidden" id="servant_NA_1">
-                                    <input type="hidden" id="servant_SW_1">
+                                    <input type="hidden" id="servant_SR_1">
                                     <input type="hidden" id="servant_AHIT_1">
                                     <input type="hidden" id="servant_QHIT_1">
                                     <input type="hidden" id="servant_BHIT_1">
@@ -279,7 +279,7 @@
                                     <input type="hidden" id="servant_class_2">
                                     <input type="hidden" id="servant_rare_2">
                                     <input type="hidden" id="servant_NA_2">
-                                    <input type="hidden" id="servant_SW_2">
+                                    <input type="hidden" id="servant_SR_2">
                                     <input type="hidden" id="servant_AHIT_2">
                                     <input type="hidden" id="servant_QHIT_2">
                                     <input type="hidden" id="servant_BHIT_2">
@@ -387,7 +387,7 @@
                                     <input type="hidden" id="servant_class_3">
                                     <input type="hidden" id="servant_rare_3">
                                     <input type="hidden" id="servant_NA_3">
-                                    <input type="hidden" id="servant_SW_3">
+                                    <input type="hidden" id="servant_SR_3">
                                     <input type="hidden" id="servant_AHIT_3">
                                     <input type="hidden" id="servant_QHIT_3">
                                     <input type="hidden" id="servant_BHIT_3">
@@ -495,7 +495,7 @@
                                     <input type="hidden" id="servant_class_4">
                                     <input type="hidden" id="servant_rare_4">
                                     <input type="hidden" id="servant_NA_4">
-                                    <input type="hidden" id="servant_SW_4">
+                                    <input type="hidden" id="servant_SR_4">
                                     <input type="hidden" id="servant_AHIT_4">
                                     <input type="hidden" id="servant_QHIT_4">
                                     <input type="hidden" id="servant_BHIT_4">
@@ -580,6 +580,50 @@
                 </div>
             </div>
 
+            <!-- NPスター計算 -->
+            <div class="modal fade" id="np-star-modal" tabindex="-1" aria-labelledby="np-star-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="np-star-label">NP・スター計算</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-bordered np-star-inp-tbl" id="np-star-inp-tbl">
+                                <tr>
+                                    <th>NP<br>N/A</th>
+                                    <td><input type="number" id="np_na" class="form-control" placeholder="0"></input></td>
+                                    <th>NP<br>バフ</th>
+                                    <td><input type="number" id="np_gain_buff" class="form-control" placeholder="0"></input></td>
+                                </tr>
+                                <tr>
+                                    <th>スター<br>SR</th>
+                                    <td><input type="number" id="star_rate" class="form-control" placeholder="0"></input></td>
+                                    <th>発生率<br>バフ</th>
+                                    <td><input type="number" id="star_rate_buff" class="form-control" placeholder="0"></input></td>
+                                </tr>
+                                <tr>
+                                    <th>宝具<br>HIT数</th>
+                                    <td colspan="3"><input type="number" id="np_hit" class="form-control" placeholder="0"></input></td>
+                                </tr>
+                                <tr>
+                                    <th>NP<br>敵補正</th>
+                                    <td><input type="number" id="np_enemy_corr" class="form-control" value="100"></input></td>
+                                    <th>スター<br>敵補正</th>
+                                    <td><input type="number" id="star_enemy_corr" class="form-control" placeholder="0"></input></td>
+                                </tr>
+                                <tr>
+                                    <th>Over<br>kill数</th>
+                                    <td><input type="number" id="overkill_num" class="form-control" placeholder="0"></input></td>
+                                    <th>敵数</th>
+                                    <td><input type="number" id="enemy_num" class="form-control" placeholder="0"value="1"></input></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- サーヴァント検索 -->
             <div class="modal fade" id="search-modal" tabindex="-1" aria-labelledby="search-text" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -592,7 +636,6 @@
                             <div class="input-group mb-3">
                                 <span class="input-group-text">クラス</span>
                                 <select class="form-select servarnt-search-select" tabindex="-1" id="servant-class">
-                                    <option value=""></option>
                                     <option value="剣" selected>剣</option>
                                     <option value="弓">弓</option>
                                     <option value="槍">槍</option>
@@ -610,7 +653,6 @@
                                 </select>
                                 <span class="input-group-text">レア</span>
                                 <select class="form-select servarnt-search-select" tabindex="-1" id="servant-rare">
-                                    <option value=""></option>
                                     <option value="5" selected>5</option>
                                     <option value="4">4</option>
                                     <option value="3">3</option>
@@ -753,36 +795,38 @@
 
             <!-- フッター -->
             <footer class="fixed-bottom floating-result mx-auto" id="footer-result">
-                <table id="clac-result-tbl" class="table clac-result-tbl mx-auto">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="col_result_header"></th>
-                            <th scope="col" class="col_result_damage">天地人不利</th>
-                            <th scope="col" class="col_result_damage">天地人等倍</th>
-                            <th scope="col" class="col_result_damage">天地人有利</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="align-middle"><label class="dmg_result">最小</label></td>
-                            <td class="align-middle"><label id="dmg_min_disad" class="dmg_result">0</label></td>
-                            <td class="align-middle"><label id="dmg_min_normal" class="dmg_result">0</label></td>
-                            <td class="align-middle"><label id="dmg_min_ad" class="dmg_result">0</label></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><label class="dmg_result">平均</label></td>
-                            <td class="align-middle"><label id="dmg_ave_disad" class="dmg_result">0</label></td>
-                            <td class="align-middle"><label id="dmg_ave_normal" class="dmg_result">0</label></td>
-                            <td class="align-middle"><label id="dmg_ave_ad" class="dmg_result">0</label></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><label class="dmg_result">最大</label></td>
-                            <td class="align-middle"><label id="dmg_max_disad" class="dmg_result">0</label></td>
-                            <td class="align-middle"><label id="dmg_max_normal" class="dmg_result">0</label></td>
-                            <td class="align-middle"><label id="dmg_max_ad" class="dmg_result">0</label></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <a href="#" class="text-body" data-bs-toggle="modal" data-bs-target="#">
+                    <table id="clac-result-tbl" class="table clac-result-tbl mx-auto">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col_result_header"></th>
+                                <th scope="col" class="col_result_damage">天地人不利</th>
+                                <th scope="col" class="col_result_damage">天地人等倍</th>
+                                <th scope="col" class="col_result_damage">天地人有利</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="align-middle"><label class="dmg_result">最小</label></td>
+                                <td class="align-middle"><label id="dmg_min_disad" class="dmg_result">0</label></td>
+                                <td class="align-middle"><label id="dmg_min_normal" class="dmg_result">0</label></td>
+                                <td class="align-middle"><label id="dmg_min_ad" class="dmg_result">0</label></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle"><label class="dmg_result">平均</label></td>
+                                <td class="align-middle"><label id="dmg_ave_disad" class="dmg_result">0</label></td>
+                                <td class="align-middle"><label id="dmg_ave_normal" class="dmg_result">0</label></td>
+                                <td class="align-middle"><label id="dmg_ave_ad" class="dmg_result">0</label></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle"><label class="dmg_result">最大</label></td>
+                                <td class="align-middle"><label id="dmg_max_disad" class="dmg_result">0</label></td>
+                                <td class="align-middle"><label id="dmg_max_normal" class="dmg_result">0</label></td>
+                                <td class="align-middle"><label id="dmg_max_ad" class="dmg_result">0</label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </a>
             </footer>
         </div>
     </body>
