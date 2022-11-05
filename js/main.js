@@ -114,7 +114,7 @@ $(function(){
     /**
      * セレクトボックス変更イベント
      */
-     $(document).on("change", "select", function () {
+     $(document).on("change", ".calc-inp-tbl select", function () {
         var tabNumber = $("input[name='tab-radio']:checked").val();
 
         // 対象タブを計算
@@ -247,24 +247,459 @@ $(function(){
 
     });
 
+    /**
+     * サーヴァント検索画面表示イベント
+     */
+    $("#search-modal").on("show.bs.modal", function () {
+
+        var tabNumber = $("input[name='tab-radio']:checked").val();
+
+        if ($("#search_servant_class_" + tabNumber).val() != "") {
+            $("#servant-class").val($("#search_servant_class_" + tabNumber).val());
+        }
+        if ($("#search_servant_rare_" + tabNumber).val() != "") {
+            $("#servant-rare").val($("#search_servant_rare_" + tabNumber).val());
+        }
+        // サーヴァントセレクトボックスを再作成
+        remakeServantSelectBox();
+        if ($("#servant_No_" + tabNumber).val() != "") {
+            $("#servant-name").val($("#servant_No_" + tabNumber).val());
+        }
+        if ($("#search_servant_lvl_" + tabNumber).val() != "") {
+            switch ($("#search_servant_lvl_" + tabNumber).val()) {
+                case "MAX" :
+                    $("#radio_lvlMax").prop("checked", true);
+                    break;
+                case "100" :
+                    $("#radio_lvl100").prop("checked", true);
+                    break;
+                case "110" :
+                    $("#radio_lvl110").prop("checked", true);
+                    break;
+                case "120" :
+                    $("#radio_lvl120").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+        if ($("#search_servant_nplvl_" + tabNumber).val() != "") {
+            switch ($("#search_servant_nplvl_" + tabNumber).val()) {
+                case "1" :
+                    $("#radio_nplvl_1").prop("checked", true);
+                    break;
+                case "2" :
+                    $("#radio_nplvl_2").prop("checked", true);
+                    break;
+                case "3" :
+                    $("#radio_nplvl_3").prop("checked", true);
+                    break;
+                case "4" :
+                    $("#radio_nplvl_4").prop("checked", true);
+                    break;
+                case "5" :
+                    $("#radio_nplvl_5").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+        if ($("#search_servant_fou_" + tabNumber).val() != "") {
+            switch ($("#search_servant_fou_" + tabNumber).val()) {
+                case "0" :
+                    $("#radio_fou_0").prop("checked", true);
+                    break;
+                case "1000" :
+                    $("#radio_fou_1000").prop("checked", true);
+                    break;
+                case "2000" :
+                    $("#radio_fou_2000").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+        if ($("#search_servant_ce_" + tabNumber).val() != "") {
+            switch ($("#search_servant_ce_" + tabNumber).val()) {
+                case "0" :
+                    $("#radio_ce_atk_0").prop("checked", true);
+                    break;
+                case "100" :
+                    $("#radio_ce_atk_100").prop("checked", true);
+                    break;
+                case "1000" :
+                    $("#radio_ce_atk_1000").prop("checked", true);
+                    break;
+                case "2000" :
+                    $("#radio_ce_atk_2000").prop("checked", true);
+                    break;
+                case "2400" :
+                    $("#radio_ce_atk_2400").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+
+        return true;
+
+    });
+
+    /**
+     * サーヴァント検索―クラス・レアリティ変更イベント
+     */
+    $(document).on("change", ".servarnt-search-select", function () {
+
+        // サーヴァントセレクトボックスを再作成
+        remakeServantSelectBox();
+
+    });
+
+    /**
+     * サーヴァント検索―選択押下イベント
+     */
+    $(document).on("click", "#btnSelected", function() {
+
+        var tabNumber = $("input[name='tab-radio']:checked").val();
+
+        // 入力初期化
+        clearParam(tabNumber);
+
+        $(servantList).each(function() {
+            
+            if ($("#servant-name").val() == this["No"]) {
+
+                var atk;
+
+                switch ($("input[name='rdo_lvl']:checked").val()) {
+                    case "MAX" :
+                        atk = Number(this["MaxAtk"]);
+                        break;
+                    case "100" :
+                        atk = rounddown(Number(this["BaseAtk"]) 
+                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                            * Number(correctio_lv100[Number(this["レアリティ"])]),0);
+                        break;
+                    case "110" :
+                        atk = rounddown(Number(this["BaseAtk"]) 
+                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                            * Number(correctio_lv110[Number(this["レアリティ"])]),0);
+                        break;
+                    case "120" :
+                        atk = rounddown(Number(this["BaseAtk"]) 
+                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                            * Number(correctio_lv120[Number(this["レアリティ"])]),0);
+                        break;
+                    default :
+                        break;
+                }
+
+                // サーヴァント名
+                $("#servant_name_" + tabNumber).val(this["サーヴァント名"]);
+                // ATK
+                $("#atk_" + tabNumber).val(Number(atk) + Number($("input[name='rdo_fou']:checked").val()) + Number($("input[name='rdo_ce']:checked").val()));
+                // 宝具倍率
+                switch ($("input[name='rdo_np_lvl']:checked").val()) {
+                    case "1" :
+                        if (this["宝具Lv1"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv1"]);
+                        }
+                        break;
+                    case "2" :
+                        if (this["宝具Lv2"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv2"]);
+                        }
+                        break;
+                    case "3" :
+                        if (this["宝具Lv3"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv3"]);
+                        }
+                        break;
+                    case "4" :
+                        if (this["宝具Lv4"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv4"]);
+                        }
+                        break;
+                    case "5" :
+                        if (this["宝具Lv5"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv5"]);
+                        }
+                        break;
+                    default :
+                        break;
+                }
+                // 宝具種類
+                $("#np_kind_" + tabNumber).val(this["宝具カード"]);
+                // クラススキル_カード
+                if (this["クラススキル_Bバフ"] != "0"){
+                    $("#b_card_buff_" + tabNumber).val(this["クラススキル_Bバフ"]);
+                }
+                if (this["クラススキル_Aバフ"] != "0") {
+                    $("#a_card_buff_" + tabNumber).val(this["クラススキル_Aバフ"]);
+                }
+                if (this["クラススキル_Qバフ"] != "0") {
+                    $("#q_card_buff_" + tabNumber).val(this["クラススキル_Qバフ"]);
+                }
+                // クラススキル_クリティカル
+                if (this["クラススキル_クリバフ"] != "") {
+                    $("#cri_buff_" + tabNumber).val(this["クラススキル_クリバフ"]);
+                }
+                if (this["クラススキル_Bクリバフ"] != "") {
+                    $("#b_card_cri_buff_" + tabNumber).val(this["クラススキル_Bクリバフ"]);
+                }
+                if (this["クラススキル_Aクリバフ"] != "") {
+                    $("#a_card_cri_buff_" + tabNumber).val(this["クラススキル_Aクリバフ"]);
+                }
+                if (this["クラススキル_Qクリバフ"] != "") {
+                    $("#q_card_cri_buff_" + tabNumber).val(this["クラススキル_Qクリバフ"]);
+                }
+                // クラススキル_宝具
+                if (this["クラススキル_宝具バフ"] != "0") {
+                    $("#np_buff_" + tabNumber).val(this["クラススキル_宝具バフ"]);
+                }
+                // クラススキル_固定ダメージ
+                if (this["クラススキル_固定ダメージ"] != "0") {
+                    $("#fixed_dmg_" + tabNumber).val(this["クラススキル_固定ダメージ"]);
+                }
+                // クラス相性
+                switch (this["クラス"]) {
+                    case "剣" :
+                    case "騎" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("1.00");
+                        break;
+                    case "弓" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("0.95");
+                        break;
+                    case "槍" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("1.05");
+                        break;
+                    case "術" :
+                    case "殺" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("0.90");
+                        break;
+                    case "狂" :
+                        $("#class_affinity_" + tabNumber).val("1.5");
+                        $("#class_servant_" + tabNumber).val("1.10");
+                        break;
+                    case "盾" :
+                    case "月" :
+                    case "降" :
+                        $("#class_affinity_" + tabNumber).val("1.0");
+                        $("#class_servant_" + tabNumber).val("1.00");
+                        break;
+                    case "裁" :
+                    case "讐" :
+                        $("#class_affinity_" + tabNumber).val("1.0");
+                        $("#class_servant_" + tabNumber).val("1.10");
+                        break;
+                    case "分" :
+                    case "詐" :
+                        $("#class_affinity_" + tabNumber).val("1.5");
+                        $("#class_servant_" + tabNumber).val("1.00");
+                        break;
+                    default :
+                        break;
+                }
+
+                // hidden
+                $("#search_servant_class_" + tabNumber).val($("#servant-class").val());
+                $("#search_servant_rare_" + tabNumber).val($("#servant-rare").val());
+                $("#search_servant_lvl_" + tabNumber).val($("input[name='rdo_lvl']:checked").val());
+                $("#search_servant_nplvl_" + tabNumber).val($("input[name='rdo_np_lvl']:checked").val());
+                $("#search_servant_fou_" + tabNumber).val($("input[name='rdo_fou']:checked").val());
+                $("#search_servant_ce_" + tabNumber).val($("input[name='rdo_ce']:checked").val());
+                $("#servant_No_" + tabNumber).val(this["No"]);
+                $("#servant_Name_" + tabNumber).val(this["サーヴァント名"]);
+                $("#servant_class_" + tabNumber).val(this["クラス"]);
+                $("#servant_rare_" + tabNumber).val(this["レアリティ"]);
+                $("#servant_NA_" + tabNumber).val(this["N_N/A"]);
+                $("#servant_SW_" + tabNumber).val(this["SW"]);
+                $("#servant_AHIT_" + tabNumber).val(this["AHIT"]);
+                $("#servant_QHIT_" + tabNumber).val(this["QHIT"]);
+                $("#servant_BHIT_" + tabNumber).val(this["BHIT"]);
+                $("#servant_EXHIT_" + tabNumber).val(this["EXHIT"]);
+                $("#servant_NHIT_" + tabNumber).val(this["NHIT"]);
+
+            }
+
+        });
+
+        // 再計算
+        calcMain(tabNumber)
+
+        // モーダルを閉じる
+        $("#search-modal").modal("hide");
+        
+        return true;
+
+    });
+
+    // CSVの読み込み
+    $.get("https://fategoplayer.github.io/fgodamagecalculator-tab/servant_data.csv", parseCsv, "text");
+
 });
 
 /**
- * 行コピー
- * @param copy_from コピー元行
- * @param copy_to コピー先行
+ * サーヴァントセレクトボックス再作成
  */
- function copyParam(copy_from, copy_to){
+ function remakeServantSelectBox() {
+    let className = $("#servant-class").val();
+    let rarity = $("#servant-rare").val();
+
+    if (className != "" || rarity != "") {
+        // サーヴァントセレクトボックスを削除
+        while ($("#servant-name")[0].lastChild) {
+            $("#servant-name")[0].removeChild($("#servant-name")[0].lastChild);
+        }
+
+        // 指定されたクラスのみで再作成
+        $(servantList).each(function() {
+            var option = document.createElement("option");
+
+            if (className != "" && rarity != "") {
+                if (this["クラス"] == className && this["レアリティ"] == rarity) {
+                    option.value = this["No"];
+                    option.textContent = this["サーヴァント名"];
+                    $("#servant-name")[0].appendChild(option);
+                }
+            }
+            else if (className != "" && rarity == "") {
+                if (this["クラス"] == className) {
+                    option.value = this["No"];
+                    option.textContent = this["サーヴァント名"];
+                    $("#servant-name")[0].appendChild(option);
+                }
+            }
+            else if (className == "" && rarity != "") {
+                if (this["レアリティ"] == rarity) {
+                    option.value = this["No"];
+                    option.textContent = this["サーヴァント名"];
+                    $("#servant-name")[0].appendChild(option);
+                }
+            }
+
+        });
+    }
+    else {
+
+        // サーヴァントセレクトボックスを削除
+        while ($("#servant-name")[0].lastChild) {
+            $("#servant-name")[0].removeChild($("#servant-name")[0].lastChild);
+        }
+
+        // 全てのサーヴァントで再作成
+        $(servantList).each(function() {
+            var option = document.createElement("option");  
+            option.value = this["No"];
+            option.textContent = this["サーヴァント名"];
+            $("#servant-name")[0].appendChild(option);
+        });
+
+    }
+}
+
+/**
+ * CSV読込
+ * @param data csvパス
+ */
+function parseCsv(data) {
+    // CSVを配列で読み込む
+    var csv = $.csv.toArrays(data);
+
+    servantList = new Array();
+
+    $(csv).each(function() {
+        
+        var option = document.createElement("option");  
+        var servant = {};
+
+        servant["No"] = this[0];
+        servant["サーヴァント名"] = this[1];
+        servant["クラス"] = this[2];
+        servant["レアリティ"] = this[3];
+        servant["BaseHP"] = this[4];
+        servant["MaxHP"] = this[5];
+        servant["BaseAtk"] = this[6];
+        servant["MaxAtk"] = this[7];
+        servant["天地人"] = this[8];
+        servant["A_N/A"] = this[9];
+        servant["B_N/A"] = this[10];
+        servant["Q_N/A"] = this[11];
+        servant["EX_N/A"] = this[12];
+        servant["N_N/A"] = this[13];
+        servant["N/D"] = this[14];
+        servant["SR"] = this[15];
+        servant["SW"] = this[16];
+        servant["DR"] = this[17];
+        servant["AHIT"] = this[18];
+        servant["BHIT"] = this[19];
+        servant["QHIT"] = this[20];
+        servant["EXHIT"] = this[21];
+        servant["宝具HIT"] = this[22];
+        servant["カード"] = this[23];
+        servant["宝具カード"] = this[24];
+        servant["宝具Lv1"] = this[25];
+        servant["宝具Lv2"] = this[26];
+        servant["宝具Lv3"] = this[27];
+        servant["宝具Lv4"] = this[28];
+        servant["宝具Lv5"] = this[29];
+        servant["クラススキル_固定ダメージ"] = this[30];
+        servant["クラススキル_Aバフ"] = this[31];
+        servant["クラススキル_Bバフ"] = this[32];
+        servant["クラススキル_Qバフ"] = this[33];
+        servant["クラススキル_宝具バフ"] = this[34];
+        servant["クラススキル_クリバフ"] = this[35];
+        servant["クラススキル_Aクリバフ"] = this[36];
+        servant["クラススキル_Bクリバフ"] = this[37];
+        servant["クラススキル_Qクリバフ"] = this[38];
+        servant["クラススキル_NP獲得バフ"] = this[39];
+        servant["クラススキル_NP獲得Aバフ"] = this[40];
+        servant["クラススキル_NP獲得Bバフ"] = this[41];
+        servant["クラススキル_NP獲得Qバフ"] = this[42];
+        servant["クラススキル_スター獲得バフ"] = this[43];
+        servant["クラススキル_スター獲得Aバフ"] = this[44];
+        servant["クラススキル_スター獲得Bバフ"] = this[45];
+        servant["クラススキル_スター獲得Qバフ"] = this[46];
+        servant["性別"] = this[47];
+        servant["属性"] = this[48];
+        servant["性格"] = this[49];
+        servant["特性"] = this[50];
+
+        servantList.push(servant);
+
+        option.value = servant["No"];
+        option.textContent = servant["サーヴァント名"];
+        $("#servant-name")[0].appendChild(option);
+
+    });
+    
+}
+
+/**
+ * コピー
+ * @param copy_from コピー元
+ * @param copy_to コピー先
+ */
+ function copyParam(copy_from, copy_to) {
+    $("#servant_name_" + copy_to).val($("#servant_name_" + copy_from).val());
     $("#atk_" + copy_to).val($("#atk_" + copy_from).val());
     $("#np_dmg_" + copy_to).val($("#np_dmg_" + copy_from).val());
     $("#np_kind_" + copy_to).val($("#np_kind_" + copy_from).val());
     $("#atk_buff_" + copy_to).val($("#atk_buff_" + copy_from).val());
+    $("#def_debuff_" + copy_to).val($("#def_debuff_" + copy_from).val());
     $("#b_card_buff_" + copy_to).val($("#b_card_buff_" + copy_from).val());
     $("#b_card_cri_buff_" + copy_to).val($("#b_card_cri_buff_" + copy_from).val());
     $("#a_card_buff_" + copy_to).val($("#a_card_buff_" + copy_from).val());
     $("#a_card_cri_buff_" + copy_to).val($("#a_card_cri_buff_" + copy_from).val());
     $("#q_card_buff_" + copy_to).val($("#q_card_buff_" + copy_from).val());
     $("#q_card_cri_buff_" + copy_to).val($("#q_card_cri_buff_" + copy_from).val());
+    $("#b_card_debuff_" + copy_to).val($("#b_card_debuff_" + copy_from).val());
+    $("#a_card_debuff_" + copy_to).val($("#a_card_debuff_" + copy_from).val());
+    $("#q_card_debuff_" + copy_to).val($("#q_card_debuff_" + copy_from).val());
     $("#cri_buff_" + copy_to).val($("#cri_buff_" + copy_from).val());
     $("#np_buff_" + copy_to).val($("#np_buff_" + copy_from).val());
     $("#ex_atk_buff_" + copy_to).val($("#ex_atk_buff_" + copy_from).val());
@@ -307,82 +742,121 @@ $(function(){
     $("#card_3rd_" + copy_to).val($("#card_3rd_" + copy_from).val());
     $("#card_3rd_cri_" + copy_to).val($("#card_3rd_cri_" + copy_from).val());
     $("#ex_cri_" + copy_to).val($("#ex_cri_" + copy_from).val());
+    // hidden
+    $("#search_servant_class_" + copy_to).val($("#search_servant_class_" + copy_from).val());
+    $("#search_servant_rare_" + copy_to).val($("#search_servant_rare_" + copy_from).val());
+    $("#search_servant_lvl_" + copy_to).val($("#search_servant_lvl_" + copy_from).val());
+    $("#search_servant_nplvl_" + copy_to).val($("#search_servant_nplvl_" + copy_from).val());
+    $("#search_servant_fou_" + copy_to).val($("#search_servant_fou_" + copy_from).val());
+    $("#search_servant_ce_" + copy_to).val($("#search_servant_ce_" + copy_from).val());
+    $("#servant_No_" + copy_to).val($("#servant_No_" + copy_from).val());
+    $("#servant_Name_" + copy_to).val($("#servant_Name_" + copy_from).val());
+    $("#servant_class_" + copy_to).val($("#servant_class_" + copy_from).val());
+    $("#servant_rare_" + copy_to).val($("#servant_rare_" + copy_from).val());
+    $("#servant_NA_" + copy_to).val($("#servant_NA_" + copy_from).val());
+    $("#servant_SW_" + copy_to).val($("#servant_SW_" + copy_from).val());
+    $("#servant_AHIT_" + copy_to).val($("#servant_AHIT_" + copy_from).val());
+    $("#servant_QHIT_" + copy_to).val($("#servant_QHIT_" + copy_from).val());
+    $("#servant_BHIT_" + copy_to).val($("#servant_BHIT_" + copy_from).val());
+    $("#servant_EXHIT_" + copy_to).val($("#servant_EXHIT_" + copy_from).val());
+    $("#servant_NHIT_" + copy_to).val($("#servant_NHIT_" + copy_from).val());
 }
 
 /**
  * パラメーター初期化
- * @param row 行番号
+ * @param tabNumber タブ番号
  */
- function clearParam(row) {
-
-    $("#atk_" + row).val("");
-    $("#np_dmg_" + row).val("");
-    $("#np_kind_" + row).val("B");
-    $("#atk_buff_" + row).val("");
-    $("#b_card_buff_" + row).val("");
-    $("#b_card_cri_buff_" + row).val("");
-    $("#a_card_buff_" + row).val("");
-    $("#a_card_cri_buff_" + row).val("");
-    $("#q_card_buff_" + row).val("");
-    $("#q_card_cri_buff_" + row).val("");
-    $("#cri_buff_" + row).val("");
-    $("#np_buff_" + row).val("");
-    $("#ex_atk_buff_" + row).val("");
-    $("#supereffective_buff_" + row).val("");
-    $("#supereffective_np_" + row).val("100");
-    $("#fixed_dmg_" + row).val("");
-    $("#b_footprints_" + row).val("");
-    $("#a_footprints_" + row).val("");
-    $("#q_footprints_" + row).val("");
-    $("#special_def_" + row).val("");
-    $("#advanced_atk_buff_1st_" + row).val("");
-    $("#advanced_atk_buff_2nd_" + row).val("");
-    $("#advanced_atk_buff_3rd_" + row).val("");
-    $("#advanced_atk_buff_Ex_" + row).val("");
-    $("#advanced_card_buff_1st_" + row).val("");
-    $("#advanced_card_buff_2nd_" + row).val("");
-    $("#advanced_card_buff_3rd_" + row).val("");
-    $("#advanced_cri_buff_1st_" + row).val("");
-    $("#advanced_cri_buff_2nd_" + row).val("");
-    $("#advanced_cri_buff_3rd_" + row).val("");
-    $("#advanced_supereffective_buff_1st_" + row).val("");
-    $("#advanced_supereffective_buff_2nd_" + row).val("");
-    $("#advanced_supereffective_buff_3rd_" + row).val("");
-    $("#advanced_supereffective_buff_Ex_" + row).val("");
-    $("#advanced_fixed_dmg_1st_" + row).val("");
-    $("#advanced_fixed_dmg_2nd_" + row).val("");
-    $("#advanced_fixed_dmg_3rd_" + row).val("");
-    $("#advanced_fixed_dmg_Ex_" + row).val("");
-    $("#advanced_special_def_1st_" + row).val("");
-    $("#advanced_special_def_2nd_" + row).val("");
-    $("#advanced_special_def_3rd_" + row).val("");
-    $("#advanced_special_def_Ex_" + row).val("");
-    $("#class_affinity_" + row).val("2.0");
-    $("#attribute_affinity_" + row).val("1.0");
-    $("#class_servant_" + row).val("1.00");
-    $("#card_1st_" + row).val("NP");
-    $("#card_1st_cri_" + row).val("Y");
-    $("#card_2nd_" + row).val("B");
-    $("#card_2nd_cri_" + row).val("Y");
-    $("#card_3rd_" + row).val("B");
-    $("#card_3rd_cri_" + row).val("Y");
-    $("#ex_cri_" + row).val("N");
-    $("#dmg_min_1st_" + row).val("0");
-    $("#dmg_ave_1st_" + row).val("0");
-    $("#dmg_max_1st_" + row).val("0");
-    $("#dmg_min_2nd_" + row).val("0");
-    $("#dmg_ave_2nd_" + row).val("0");
-    $("#dmg_max_2nd_" + row).val("0");
-    $("#dmg_min_3rd_" + row).val("0");
-    $("#dmg_ave_3rd_" + row).val("0");
-    $("#dmg_max_3rd_" + row).val("0");
-    $("#dmg_min_ex_" + row).val("0");
-    $("#dmg_ave_ex_" + row).val("0");
-    $("#dmg_max_ex_" + row).val("0");
-    $("#dmg_min_total_" + row).val("0");
-    $("#dmg_ave_total_" + row).val("0");
-    $("#dmg_max_total_" + row).val("0");
-
+ function clearParam(tabNumber) {
+    $("#servant_name_" + tabNumber).val("");
+    $("#atk_" + tabNumber).val("");
+    $("#np_dmg_" + tabNumber).val("");
+    $("#np_kind_" + tabNumber).val("B");
+    $("#atk_buff_" + tabNumber).val("");
+    $("#def_debuff_" + tabNumber).val("");
+    $("#b_card_buff_" + tabNumber).val("");
+    $("#b_card_cri_buff_" + tabNumber).val("");
+    $("#a_card_buff_" + tabNumber).val("");
+    $("#a_card_cri_buff_" + tabNumber).val("");
+    $("#q_card_buff_" + tabNumber).val("");
+    $("#q_card_cri_buff_" + tabNumber).val("");
+    $("#b_card_debuff_" + tabNumber).val("");
+    $("#a_card_debuff_" + tabNumber).val("");
+    $("#q_card_debuff_" + tabNumber).val("");
+    $("#cri_buff_" + tabNumber).val("");
+    $("#np_buff_" + tabNumber).val("");
+    $("#ex_atk_buff_" + tabNumber).val("");
+    $("#supereffective_buff_" + tabNumber).val("");
+    $("#supereffective_np_" + tabNumber).val("100");
+    $("#fixed_dmg_" + tabNumber).val("");
+    $("#b_footprints_" + tabNumber).val("");
+    $("#a_footprints_" + tabNumber).val("");
+    $("#q_footprints_" + tabNumber).val("");
+    $("#special_def_" + tabNumber).val("");
+    $("#advanced_atk_buff_1st_" + tabNumber).val("");
+    $("#advanced_atk_buff_2nd_" + tabNumber).val("");
+    $("#advanced_atk_buff_3rd_" + tabNumber).val("");
+    $("#advanced_atk_buff_Ex_" + tabNumber).val("");
+    $("#advanced_card_buff_1st_" + tabNumber).val("");
+    $("#advanced_card_buff_2nd_" + tabNumber).val("");
+    $("#advanced_card_buff_3rd_" + tabNumber).val("");
+    $("#advanced_cri_buff_1st_" + tabNumber).val("");
+    $("#advanced_cri_buff_2nd_" + tabNumber).val("");
+    $("#advanced_cri_buff_3rd_" + tabNumber).val("");
+    $("#advanced_supereffective_buff_1st_" + tabNumber).val("");
+    $("#advanced_supereffective_buff_2nd_" + tabNumber).val("");
+    $("#advanced_supereffective_buff_3rd_" + tabNumber).val("");
+    $("#advanced_supereffective_buff_Ex_" + tabNumber).val("");
+    $("#advanced_fixed_dmg_1st_" + tabNumber).val("");
+    $("#advanced_fixed_dmg_2nd_" + tabNumber).val("");
+    $("#advanced_fixed_dmg_3rd_" + tabNumber).val("");
+    $("#advanced_fixed_dmg_Ex_" + tabNumber).val("");
+    $("#advanced_special_def_1st_" + tabNumber).val("");
+    $("#advanced_special_def_2nd_" + tabNumber).val("");
+    $("#advanced_special_def_3rd_" + tabNumber).val("");
+    $("#advanced_special_def_Ex_" + tabNumber).val("");
+    $("#class_affinity_" + tabNumber).val("2.0");
+    $("#attribute_affinity_" + tabNumber).val("1.0");
+    $("#class_servant_" + tabNumber).val("1.00");
+    $("#card_1st_" + tabNumber).val("NP");
+    $("#card_1st_cri_" + tabNumber).val("Y");
+    $("#card_2nd_" + tabNumber).val("B");
+    $("#card_2nd_cri_" + tabNumber).val("Y");
+    $("#card_3rd_" + tabNumber).val("B");
+    $("#card_3rd_cri_" + tabNumber).val("Y");
+    $("#ex_cri_" + tabNumber).val("N");
+    $("#dmg_min_1st_" + tabNumber).val("0");
+    $("#dmg_ave_1st_" + tabNumber).val("0");
+    $("#dmg_max_1st_" + tabNumber).val("0");
+    $("#dmg_min_2nd_" + tabNumber).val("0");
+    $("#dmg_ave_2nd_" + tabNumber).val("0");
+    $("#dmg_max_2nd_" + tabNumber).val("0");
+    $("#dmg_min_3rd_" + tabNumber).val("0");
+    $("#dmg_ave_3rd_" + tabNumber).val("0");
+    $("#dmg_max_3rd_" + tabNumber).val("0");
+    $("#dmg_min_ex_" + tabNumber).val("0");
+    $("#dmg_ave_ex_" + tabNumber).val("0");
+    $("#dmg_max_ex_" + tabNumber).val("0");
+    $("#dmg_min_total_" + tabNumber).val("0");
+    $("#dmg_ave_total_" + tabNumber).val("0");
+    $("#dmg_max_total_" + tabNumber).val("0");
+    // hidden
+    $("#search_servant_class_" + tabNumber).val("");
+    $("#search_servant_rare_" + tabNumber).val("");
+    $("#search_servant_lvl_" + tabNumber).val("");
+    $("#search_servant_nplvl_" + tabNumber).val("");
+    $("#search_servant_fou_" + tabNumber).val("");
+    $("#search_servant_ce_" + tabNumber).val("");
+    $("#servant_No_" + tabNumber).val("");
+    $("#servant_Name_" + tabNumber).val("");
+    $("#servant_class_" + tabNumber).val("");
+    $("#servant_rare_" + tabNumber).val("");
+    $("#servant_NA_" + tabNumber).val("");
+    $("#servant_SW_" + tabNumber).val("");
+    $("#servant_AHIT_" + tabNumber).val("");
+    $("#servant_QHIT_" + tabNumber).val("");
+    $("#servant_BHIT_" + tabNumber).val("");
+    $("#servant_EXHIT_" + tabNumber).val("");
+    $("#servant_NHIT_" + tabNumber).val("");
 }
 
 /**
@@ -390,8 +864,8 @@ $(function(){
  * @param tabNumber 計算対象行
  */
  function calcMain(tabNumber) {
-    var atk, np_dmg, np_kind, atk_buff, b_card_buff, b_card_cri_buff, a_card_buff, a_card_cri_buff, q_card_buff, q_card_cri_buff,
-    cri_buff, np_buff, ex_atk_buff, supereffective_buff, supereffective_np, fixed_dmg, b_footprints, a_footprints, q_footprints,
+    var atk, np_dmg, np_kind, atk_buff, def_debuff, b_card_buff, b_card_cri_buff, a_card_buff, a_card_cri_buff, q_card_buff, q_card_cri_buff,
+    b_card_debuff, a_card_debuff, q_card_debuff, cri_buff, np_buff, ex_atk_buff, supereffective_buff, supereffective_np, fixed_dmg, b_footprints, a_footprints, q_footprints,
     special_def, advanced_atk_buff_1st, advanced_atk_buff_2nd, advanced_atk_buff_3rd, advanced_atk_buff_ex,
     advanced_supereffective_buff_1st, advanced_supereffective_buff_2nd, advanced_supereffective_buff_3rd, advanced_supereffective_buff_ex,
     advanced_fixed_dmg_1st, advanced_fixed_dmg_2nd, advanced_fixed_dmg_3rd, advanced_fixed_dmg_ex, 
@@ -415,12 +889,16 @@ $(function(){
     atk = 0;
     np_dmg = 0;
     atk_buff = 0;
+    def_debuff = 0;
     b_card_buff = 0;
     b_card_cri_buff = 0;
     a_card_buff = 0;
     a_card_cri_buff = 0;
     q_card_buff = 0;
     q_card_cri_buff = 0;
+    b_card_debuff = 0;
+    a_card_debuff = 0;
+    q_card_debuff = 0;
     cri_buff = 0;
     np_buff = 0;
     ex_atk_buff = 0;
@@ -453,18 +931,25 @@ $(function(){
     advanced_special_def_2nd = 0;
     advanced_special_def_3rd = 0;
     advanced_special_def_ex = 0;
+    bbonus_all = 0;
+    bchain_bonus = 0;
+    exbonus = 200;
 
     // 計算パラメーター取得
     if ($("#atk_" + tabNumber).val() != "") { atk = parseFloat($("#atk_" + tabNumber).val()); }
     if ($("#np_dmg_" + tabNumber).val() != "") { np_dmg = parseFloat($("#np_dmg_" + tabNumber).val()); }
     np_kind = $("#np_kind_" + tabNumber).val();
     if ($("#atk_buff_" + tabNumber).val() != "") { atk_buff = parseFloat($("#atk_buff_" + tabNumber).val()); }
+    if ($("#def_debuff_" + tabNumber).val() != "") { def_debuff = parseFloat($("#def_debuff_" + tabNumber).val()); }
     if ($("#b_card_buff_" + tabNumber).val() != "") { b_card_buff = parseFloat($("#b_card_buff_" + tabNumber).val()); }
     if ($("#b_card_cri_buff_" + tabNumber).val() != "") { b_card_cri_buff = parseFloat($("#b_card_cri_buff_" + tabNumber).val()); }
     if ($("#a_card_buff_" + tabNumber).val() != "") { a_card_buff = parseFloat($("#a_card_buff_" + tabNumber).val()); }
     if ($("#a_card_cri_buff_" + tabNumber).val() != "") { a_card_cri_buff = parseFloat($("#a_card_cri_buff_" + tabNumber).val()); }
     if ($("#q_card_buff_" + tabNumber).val() != "") { q_card_buff = parseFloat($("#q_card_buff_" + tabNumber).val()); }
     if ($("#q_card_cri_buff_" + tabNumber).val() != "") { q_card_cri_buff = parseFloat($("#q_card_cri_buff_" + tabNumber).val()); }
+    if ($("#b_card_debuff_" + tabNumber).val() != "") { b_card_debuff = parseFloat($("#b_card_debuff_" + tabNumber).val()); }
+    if ($("#a_card_debuff_" + tabNumber).val() != "") { a_card_debuff = parseFloat($("#a_card_debuff_" + tabNumber).val()); }
+    if ($("#q_card_debuff_" + tabNumber).val() != "") { q_card_debuff = parseFloat($("#q_card_debuff_" + tabNumber).val()); }
     if ($("#cri_buff_" + tabNumber).val() != "") { cri_buff = parseFloat($("#cri_buff_" + tabNumber).val()); }
     if ($("#np_buff_" + tabNumber).val() != "") { np_buff = parseFloat($("#np_buff_" + tabNumber).val()); }
     if ($("#ex_atk_buff_" + tabNumber).val() != "") { ex_atk_buff = parseFloat($("#ex_atk_buff_" + tabNumber).val()); }
@@ -508,143 +993,155 @@ $(function(){
     card_3rd_cri = $("#card_3rd_cri_" + tabNumber).val();
     ex_cri = $("#ex_cri_" + tabNumber).val();
 
-    bbonus_all = 0; bchain_bonus = 0; exbonus = 200;
+    if (b_card_buff > 400) { b_card_buff = 400 };
+    if (a_card_buff > 400) { a_card_buff = 400 };
+    if (q_card_buff > 400) { q_card_buff = 400 };
+    if (ex_atk_buff > 400) { ex_atk_buff = 400 };
+    if (atk_buff > 400) { atk_buff = 400 };
+    if (atk_buff < -100) { atk_buff = -100 };
+    if (def_debuff > 100) { def_debuff = 100 };
+    if (supereffective_buff > 1000) { supereffective_buff = 1000 };
+    if (cri_buff > 500) { cri_buff = 500 };
 
     // カード選択ボーナスを設定
     // 1st
     if (card_1st == "Q") {
         bbonus_1st = 80;
-        card_buff_1st = q_card_buff + advanced_card_buff_1st;
+        card_buff_1st = q_card_buff + q_card_debuff + advanced_card_buff_1st;
         cri_buff_1st = cri_buff + q_card_cri_buff + advanced_cri_buff_1st;
         atk_1st = atk + q_footprints;
     }
     if (card_1st == "A") {
         bbonus_1st = 100;
-        card_buff_1st = a_card_buff + advanced_card_buff_1st;
+        card_buff_1st = a_card_buff + a_card_debuff + advanced_card_buff_1st;
         cri_buff_1st = cri_buff + a_card_cri_buff + advanced_cri_buff_1st;
         atk_1st = atk + a_footprints;
     }
     if (card_1st == "B") {
         bbonus_all = 50;
         bbonus_1st = 150;
-        card_buff_1st = b_card_buff + advanced_card_buff_1st;
+        card_buff_1st = b_card_buff + b_card_debuff + advanced_card_buff_1st;
         cri_buff_1st = cri_buff + b_card_cri_buff + advanced_cri_buff_1st;
         atk_1st = atk + b_footprints;
     }
     if (card_1st == "NP" && np_kind == "Q") {
-        np_card_buff = q_card_buff + advanced_card_buff_1st;
+        np_card_buff = q_card_buff + q_card_debuff + advanced_card_buff_1st;
         bbonus_1st = 80;
-        card_buff_1st = q_card_buff + advanced_card_buff_1st;
+        card_buff_1st = q_card_buff + q_card_debuff + advanced_card_buff_1st;
         cri_buff_1st = cri_buff + q_card_cri_buff + advanced_cri_buff_1st;
     }
     if (card_1st == "NP" && np_kind == "A") {
-        np_card_buff = a_card_buff + advanced_card_buff_1st;
+        np_card_buff = a_card_buff + a_card_debuff + advanced_card_buff_1st;
         bbonus_1st = 100;
-        card_buff_1st = a_card_buff + advanced_card_buff_1st;
+        card_buff_1st = a_card_buff + a_card_debuff + advanced_card_buff_1st;
         cri_buff_1st = cri_buff + a_card_cri_buff + advanced_cri_buff_1st;
     }
     if (card_1st == "NP" && np_kind == "B") {
-        np_card_buff = b_card_buff + advanced_card_buff_1st;
+        np_card_buff = b_card_buff + b_card_debuff + advanced_card_buff_1st;
         bbonus_all = 50;
         bbonus_1st = 150;
-        card_buff_1st = b_card_buff + advanced_card_buff_1st;
+        card_buff_1st = b_card_buff + b_card_debuff + advanced_card_buff_1st;
         cri_buff_1st = cri_buff + b_card_cri_buff + advanced_cri_buff_1st;
     }
     // 2nd
     if (card_2nd == "Q") {
         bbonus_2nd = 96;
-        card_buff_2nd = q_card_buff + advanced_card_buff_2nd;
+        card_buff_2nd = q_card_buff + q_card_debuff + advanced_card_buff_2nd;
         cri_buff_2nd = cri_buff + q_card_cri_buff + advanced_cri_buff_2nd;
         atk_2nd = atk + q_footprints;
     }
     if (card_2nd == "A") {
         bbonus_2nd = 120;
-        card_buff_2nd = a_card_buff + advanced_card_buff_2nd;
+        card_buff_2nd = a_card_buff + a_card_debuff + advanced_card_buff_2nd;
         cri_buff_2nd = cri_buff + a_card_cri_buff + advanced_cri_buff_2nd;
         atk_2nd = atk + a_footprints;
     }
     if (card_2nd == "B") {
         bbonus_2nd = 180;
-        card_buff_2nd = b_card_buff + advanced_card_buff_2nd;
+        card_buff_2nd = b_card_buff + b_card_debuff + advanced_card_buff_2nd;
         cri_buff_2nd = cri_buff + b_card_cri_buff + advanced_cri_buff_2nd;
         atk_2nd = atk + b_footprints;
     }
     if (card_2nd == "NP" && np_kind == "Q") {
-        np_card_buff = q_card_buff + advanced_card_buff_2nd;
+        np_card_buff = q_card_buff + q_card_debuff + advanced_card_buff_2nd;
         bbonus_2nd = 96;
-        card_buff_2nd = q_card_buff + advanced_card_buff_2nd;
+        card_buff_2nd = q_card_buff + q_card_debuff + advanced_card_buff_2nd;
         cri_buff_2nd = cri_buff + q_card_cri_buff + advanced_cri_buff_2nd;
     }
     if (card_2nd == "NP" && np_kind == "A") {
-        np_card_buff = a_card_buff + advanced_card_buff_2nd;
+        np_card_buff = a_card_buff + a_card_debuff + advanced_card_buff_2nd;
         bbonus_2nd = 120;
-        card_buff_2nd = a_card_buff + advanced_card_buff_2nd;
+        card_buff_2nd = a_card_buff + a_card_debuff + advanced_card_buff_2nd;
         cri_buff_2nd = cri_buff + a_card_cri_buff + advanced_cri_buff_2nd;
     }
     if (card_2nd == "NP" && np_kind == "B") {
-        np_card_buff = b_card_buff + advanced_card_buff_2nd;
+        np_card_buff = b_card_buff + b_card_debuff + advanced_card_buff_2nd;
         bbonus_2nd = 180;
-        card_buff_2nd = b_card_buff + advanced_card_buff_2nd;
+        card_buff_2nd = b_card_buff + b_card_debuff + advanced_card_buff_2nd;
         cri_buff_2nd = cri_buff + b_card_cri_buff + advanced_cri_buff_2nd;
     }
     // 3rd
     if (card_3rd == "Q") {
         bbonus_3rd = 112;
-        card_buff_3rd = q_card_buff + advanced_card_buff_3rd;
+        card_buff_3rd = q_card_buff + q_card_debuff + advanced_card_buff_3rd;
         cri_buff_3rd = cri_buff + q_card_cri_buff + advanced_cri_buff_3rd;
         atk_3rd = atk + q_footprints;
     }
     if (card_3rd == "A") {
         bbonus_3rd = 140;
-        card_buff_3rd = a_card_buff + advanced_card_buff_3rd;
+        card_buff_3rd = a_card_buff + a_card_debuff + advanced_card_buff_3rd;
         cri_buff_3rd = cri_buff + a_card_cri_buff + advanced_cri_buff_3rd;
         atk_3rd = atk + a_footprints;
     }
     if (card_3rd == "B") {
         bbonus_3rd = 210;
-        card_buff_3rd = b_card_buff + advanced_card_buff_3rd;
+        card_buff_3rd = b_card_buff + b_card_debuff + advanced_card_buff_3rd;
         cri_buff_3rd = cri_buff + b_card_cri_buff + advanced_cri_buff_3rd;
         atk_3rd = atk + b_footprints;
     }
     if (card_3rd == "NP" && np_kind == "Q") {
-        np_card_buff = q_card_buff + advanced_card_buff_3rd;
+        np_card_buff = q_card_buff + q_card_debuff + advanced_card_buff_3rd;
         bbonus_3rd = 112;
-        card_buff_3rd = q_card_buff + advanced_card_buff_3rd;
+        card_buff_3rd = q_card_buff + q_card_debuff + advanced_card_buff_3rd;
         cri_buff_3rd = cri_buff + q_card_cri_buff + advanced_cri_buff_3rd;
     }
     if (card_3rd == "NP" && np_kind == "A") {
-        np_card_buff = a_card_buff + advanced_card_buff_3rd;
+        np_card_buff = a_card_buff + a_card_debuff + advanced_card_buff_3rd;
         bbonus_3rd = 140;
-        card_buff_3rd = a_card_buff + advanced_card_buff_3rd;
+        card_buff_3rd = a_card_buff + a_card_debuff + advanced_card_buff_3rd;
         cri_buff_3rd = cri_buff + a_card_cri_buff + advanced_cri_buff_3rd;
     }
     if (card_3rd == "NP" && np_kind == "B") {
-        np_card_buff = b_card_buff + advanced_card_buff_3rd;
+        np_card_buff = b_card_buff + b_card_debuff + advanced_card_buff_3rd;
         bbonus_3rd = 210;
-        card_buff_3rd = b_card_buff + advanced_card_buff_3rd;
+        card_buff_3rd = b_card_buff + b_card_debuff + advanced_card_buff_3rd;
         cri_buff_3rd = cri_buff + b_card_cri_buff + advanced_cri_buff_3rd;
     }
     // 1st共通
-    atk_buff_1st = atk_buff + advanced_atk_buff_1st;
+    atk_buff_1st = atk_buff + def_debuff + advanced_atk_buff_1st;
     supereffective_buff_1st = supereffective_buff + advanced_supereffective_buff_1st;
     fixed_dmg_1st = fixed_dmg + advanced_fixed_dmg_1st;
     special_def_1st = special_def + advanced_special_def_1st;
     // 2nd共通
-    atk_buff_2nd = atk_buff + advanced_atk_buff_2nd;
+    atk_buff_2nd = atk_buff + def_debuff + advanced_atk_buff_2nd;
     supereffective_buff_2nd = supereffective_buff + advanced_supereffective_buff_2nd;
     fixed_dmg_2nd = fixed_dmg + advanced_fixed_dmg_2nd;
     special_def_2nd = special_def + advanced_special_def_2nd;
     // 3rd共通
-    atk_buff_3rd = atk_buff + advanced_atk_buff_3rd;
+    atk_buff_3rd = atk_buff + def_debuff + advanced_atk_buff_3rd;
     supereffective_buff_3rd = supereffective_buff + advanced_supereffective_buff_3rd;
     fixed_dmg_3rd = fixed_dmg + advanced_fixed_dmg_3rd;
     special_def_3rd = special_def + advanced_special_def_3rd;
     // EX共通
-    atk_buff_ex = atk_buff + advanced_atk_buff_ex;
+    atk_buff_ex = atk_buff + def_debuff + advanced_atk_buff_ex;
     supereffective_buff_ex = supereffective_buff + advanced_supereffective_buff_ex;
     fixed_dmg_ex = fixed_dmg + advanced_fixed_dmg_ex;
     special_def_ex = special_def + advanced_special_def_ex;
-    
+
+    // 再度上限チェック
+    if (cri_buff_1st > 500) { cri_buff_1st = 500 };
+    if (cri_buff_2nd > 500) { cri_buff_2nd = 500 };
+    if (cri_buff_3rd > 500) { cri_buff_3rd = 500 };
     
     // 各種ボーナス
     if (card_1st == "NP") {

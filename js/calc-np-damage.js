@@ -1,4 +1,10 @@
 const card_list = { "B": 1.5, "A": 1.0, "Q": 0.8 }; //宝具色補正
+const correctio_lv90 = { "0": 1.390, "1": 1.508, "2": 1.390, "3": 1.289, "4": 1.126, "5": 1.000 };
+const correctio_lv100 = { "0": 1.546, "1": 1.677, "2": 1.546, "3": 1.434, "4": 1.253, "5": 1.112 };
+const correctio_lv110 = { "0": 1.703, "1": 1.847, "2": 1.703, "3": 1.579, "4": 1.379, "5": 1.224 };
+const correctio_lv120 = { "0": 1.859, "1": 2.016, "2": 1.859, "3": 1.724, "4": 1.506, "5": 1.337 };
+let servantList = null;
+
 
 $(function(){
 
@@ -114,38 +120,11 @@ $(function(){
     /**
      * セレクトボックス変更イベント
      */
-     $(document).on("change", "select", function () {
+     $(document).on("change", ".calc-inp-tbl select", function () {
         var tabNumber = $("input[name='tab-radio']:checked").val();
 
         // 対象行を計算
         calcMain(tabNumber);
-
-    });
-
-    /**
-     * 撃破率画面表示イベント
-     */
-    $("#prob-modal").on("show.bs.modal", function () {
-
-        var tabNumber = $("input[name='tab-radio']:checked").val();
-        
-        // パラメーターを撃破率画面にコピー
-        copyProbInput(tabNumber);
-
-        // 撃破率計算
-        calcProb();
-
-        return true;
-
-    });
-
-    /**
-     * 撃破率フォーカス遷移イベント
-     */
-     $("#prob-inp-tbl").on("blur", "input", function () {
-
-        // 撃破率計算
-        calcProb();
 
     });
 
@@ -247,54 +226,523 @@ $(function(){
 
     });
 
+    /**
+     * サーヴァント検索画面表示イベント
+     */
+     $("#search-modal").on("show.bs.modal", function () {
+
+        var tabNumber = $("input[name='tab-radio']:checked").val();
+
+        if ($("#search_servant_class_" + tabNumber).val() != "") {
+            $("#servant-class").val($("#search_servant_class_" + tabNumber).val());
+        }
+        if ($("#search_servant_rare_" + tabNumber).val() != "") {
+            $("#servant-rare").val($("#search_servant_rare_" + tabNumber).val());
+        }
+        // サーヴァントセレクトボックスを再作成
+        remakeServantSelectBox();
+        if ($("#servant_No_" + tabNumber).val() != "") {
+            $("#servant-name").val($("#servant_No_" + tabNumber).val());
+        }
+        if ($("#search_servant_lvl_" + tabNumber).val() != "") {
+            switch ($("#search_servant_lvl_" + tabNumber).val()) {
+                case "MAX" :
+                    $("#radio_lvlMax").prop("checked", true);
+                    break;
+                case "100" :
+                    $("#radio_lvl100").prop("checked", true);
+                    break;
+                case "110" :
+                    $("#radio_lvl110").prop("checked", true);
+                    break;
+                case "120" :
+                    $("#radio_lvl120").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+        if ($("#search_servant_nplvl_" + tabNumber).val() != "") {
+            switch ($("#search_servant_nplvl_" + tabNumber).val()) {
+                case "1" :
+                    $("#radio_nplvl_1").prop("checked", true);
+                    break;
+                case "2" :
+                    $("#radio_nplvl_2").prop("checked", true);
+                    break;
+                case "3" :
+                    $("#radio_nplvl_3").prop("checked", true);
+                    break;
+                case "4" :
+                    $("#radio_nplvl_4").prop("checked", true);
+                    break;
+                case "5" :
+                    $("#radio_nplvl_5").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+        if ($("#search_servant_fou_" + tabNumber).val() != "") {
+            switch ($("#search_servant_fou_" + tabNumber).val()) {
+                case "0" :
+                    $("#radio_fou_0").prop("checked", true);
+                    break;
+                case "1000" :
+                    $("#radio_fou_1000").prop("checked", true);
+                    break;
+                case "2000" :
+                    $("#radio_fou_2000").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+        if ($("#search_servant_ce_" + tabNumber).val() != "") {
+            switch ($("#search_servant_ce_" + tabNumber).val()) {
+                case "0" :
+                    $("#radio_ce_atk_0").prop("checked", true);
+                    break;
+                case "100" :
+                    $("#radio_ce_atk_100").prop("checked", true);
+                    break;
+                case "1000" :
+                    $("#radio_ce_atk_1000").prop("checked", true);
+                    break;
+                case "2000" :
+                    $("#radio_ce_atk_2000").prop("checked", true);
+                    break;
+                case "2400" :
+                    $("#radio_ce_atk_2400").prop("checked", true);
+                    break;
+                default :
+                    break;
+            } 
+        }
+
+        return true;
+
+    });
+
+    /**
+     * サーヴァント検索―クラス・レアリティ変更イベント
+     */
+     $(document).on("change", ".servarnt-search-select", function () {
+
+        // サーヴァントセレクトボックスを再作成
+        remakeServantSelectBox();
+
+    });
+
+     /**
+     * サーヴァント検索―選択押下イベント
+     */
+    $(document).on("click", "#btnSelected", function() {
+
+        var tabNumber = $("input[name='tab-radio']:checked").val();
+
+        // 入力初期化
+        clearParam(tabNumber);
+
+        $(servantList).each(function() {
+            
+            if ($("#servant-name").val() == this["No"]) {
+
+                var atk;
+
+                switch ($("input[name='rdo_lvl']:checked").val()) {
+                    case "MAX" :
+                        atk = Number(this["MaxAtk"]);
+                        break;
+                    case "100" :
+                        atk = rounddown(Number(this["BaseAtk"]) 
+                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                            * Number(correctio_lv100[Number(this["レアリティ"])]),0);
+                        break;
+                    case "110" :
+                        atk = rounddown(Number(this["BaseAtk"]) 
+                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                            * Number(correctio_lv110[Number(this["レアリティ"])]),0);
+                        break;
+                    case "120" :
+                        atk = rounddown(Number(this["BaseAtk"]) 
+                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                            * Number(correctio_lv120[Number(this["レアリティ"])]),0);
+                        break;
+                    default :
+                        break;
+                }
+
+                // サーヴァント名
+                $("#servant_name_" + tabNumber).val(this["サーヴァント名"]);
+                // ATK
+                $("#atk_" + tabNumber).val(Number(atk) + Number($("input[name='rdo_fou']:checked").val()) + Number($("input[name='rdo_ce']:checked").val()));
+                // 宝具倍率
+                switch ($("input[name='rdo_np_lvl']:checked").val()) {
+                    case "1" :
+                        if (this["宝具Lv1"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv1"]);
+                        }
+                        break;
+                    case "2" :
+                        if (this["宝具Lv2"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv2"]);
+                        }
+                        break;
+                    case "3" :
+                        if (this["宝具Lv3"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv3"]);
+                        }
+                        break;
+                    case "4" :
+                        if (this["宝具Lv4"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv4"]);
+                        }
+                        break;
+                    case "5" :
+                        if (this["宝具Lv5"] != "0") {
+                            $("#np_dmg_" + tabNumber).val(this["宝具Lv5"]);
+                        }
+                        break;
+                    default :
+                        break;
+                }
+                // 宝具種類
+                $("#np_kind_" + tabNumber).val(this["宝具カード"]);
+                // クラススキル_カード
+                switch (this["宝具カード"]) {
+                    case "B" :
+                        if (this["クラススキル_Bバフ"] != "0"){
+                            $("#card_buff_" + tabNumber).val(this["クラススキル_Bバフ"]);
+                        }
+                        break;
+                    case "A" :
+                        if (this["クラススキル_Aバフ"] != "0") {
+                            $("#card_buff_" + tabNumber).val(this["クラススキル_Aバフ"]);
+                        }
+                        break;
+                    case "Q" :
+                        if (this["クラススキル_Qバフ"] != "0") {
+                            $("#card_buff_" + tabNumber).val(this["クラススキル_Qバフ"]);
+                        }
+                        break;
+                    default :
+                        break;
+                }
+                // クラススキル_宝具
+                if (this["クラススキル_宝具バフ"] != "0") {
+                    $("#np_buff_" + tabNumber).val(this["クラススキル_宝具バフ"]);
+                }
+                // クラススキル_固定ダメージ
+                if (this["クラススキル_固定ダメージ"] != "0") {
+                    $("#fixed_dmg_" + tabNumber).val(this["クラススキル_固定ダメージ"]);
+                }
+                // クラス相性
+                switch (this["クラス"]) {
+                    case "剣" :
+                    case "騎" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("1.00");
+                        break;
+                    case "弓" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("0.95");
+                        break;
+                    case "槍" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("1.05");
+                        break;
+                    case "術" :
+                    case "殺" :
+                        $("#class_affinity_" + tabNumber).val("2.0");
+                        $("#class_servant_" + tabNumber).val("0.90");
+                        break;
+                    case "狂" :
+                        $("#class_affinity_" + tabNumber).val("1.5");
+                        $("#class_servant_" + tabNumber).val("1.10");
+                        break;
+                    case "盾" :
+                    case "月" :
+                    case "降" :
+                        $("#class_affinity_" + tabNumber).val("1.0");
+                        $("#class_servant_" + tabNumber).val("1.00");
+                        break;
+                    case "裁" :
+                    case "讐" :
+                        $("#class_affinity_" + tabNumber).val("1.0");
+                        $("#class_servant_" + tabNumber).val("1.10");
+                        break;
+                    case "分" :
+                    case "詐" :
+                        $("#class_affinity_" + tabNumber).val("1.5");
+                        $("#class_servant_" + tabNumber).val("1.00");
+                        break;
+                    default :
+                        break;
+                }
+
+                // hidden
+                $("#search_servant_class_" + tabNumber).val($("#servant-class").val());
+                $("#search_servant_rare_" + tabNumber).val($("#servant-rare").val());
+                $("#search_servant_lvl_" + tabNumber).val($("input[name='rdo_lvl']:checked").val());
+                $("#search_servant_nplvl_" + tabNumber).val($("input[name='rdo_np_lvl']:checked").val());
+                $("#search_servant_fou_" + tabNumber).val($("input[name='rdo_fou']:checked").val());
+                $("#search_servant_ce_" + tabNumber).val($("input[name='rdo_ce']:checked").val());
+                $("#servant_No_" + tabNumber).val(this["No"]);
+                $("#servant_Name_" + tabNumber).val(this["サーヴァント名"]);
+                $("#servant_class_" + tabNumber).val(this["クラス"]);
+                $("#servant_rare_" + tabNumber).val(this["レアリティ"]);
+                $("#servant_NA_" + tabNumber).val(this["N_N/A"]);
+                $("#servant_SW_" + tabNumber).val(this["SW"]);
+                $("#servant_AHIT_" + tabNumber).val(this["AHIT"]);
+                $("#servant_QHIT_" + tabNumber).val(this["QHIT"]);
+                $("#servant_BHIT_" + tabNumber).val(this["BHIT"]);
+                $("#servant_EXHIT_" + tabNumber).val(this["EXHIT"]);
+                $("#servant_NHIT_" + tabNumber).val(this["NHIT"]);
+
+            }
+
+        });
+
+        // 再計算
+        calcMain(tabNumber)
+
+        // モーダルを閉じる
+        $("#search-modal").modal("hide");
+        
+        return true;
+
+    });
+
+    // CSVの読み込み
+    $.get("https://fategoplayer.github.io/fgodamagecalculator-tab/servant_data.csv", parseCsv, "text");
+
 });
 
 /**
- * 行コピー
+ * サーヴァントセレクトボックス再作成
+ */
+function remakeServantSelectBox() {
+    let className = $("#servant-class").val();
+    let rarity = $("#servant-rare").val();
+
+    if (className != "" || rarity != "") {
+        // サーヴァントセレクトボックスを削除
+        while ($("#servant-name")[0].lastChild) {
+            $("#servant-name")[0].removeChild($("#servant-name")[0].lastChild);
+        }
+
+        // 指定されたクラスのみで再作成
+        $(servantList).each(function() {
+            var option = document.createElement("option");
+
+            if (className != "" && rarity != "") {
+                if (this["クラス"] == className && this["レアリティ"] == rarity) {
+                    option.value = this["No"];
+                    option.textContent = this["サーヴァント名"];
+                    $("#servant-name")[0].appendChild(option);
+                }
+            }
+            else if (className != "" && rarity == "") {
+                if (this["クラス"] == className) {
+                    option.value = this["No"];
+                    option.textContent = this["サーヴァント名"];
+                    $("#servant-name")[0].appendChild(option);
+                }
+            }
+            else if (className == "" && rarity != "") {
+                if (this["レアリティ"] == rarity) {
+                    option.value = this["No"];
+                    option.textContent = this["サーヴァント名"];
+                    $("#servant-name")[0].appendChild(option);
+                }
+            }
+
+        });
+    }
+    else {
+
+        // サーヴァントセレクトボックスを削除
+        while ($("#servant-name")[0].lastChild) {
+            $("#servant-name")[0].removeChild($("#servant-name")[0].lastChild);
+        }
+
+        // 全てのサーヴァントで再作成
+        $(servantList).each(function() {
+            var option = document.createElement("option");  
+            option.value = this["No"];
+            option.textContent = this["サーヴァント名"];
+            $("#servant-name")[0].appendChild(option);
+        });
+
+    }
+}
+
+/**
+ * CSV読込
+ * @param data csvパス
+ */
+function parseCsv(data) {
+    // CSVを配列で読み込む
+    var csv = $.csv.toArrays(data);
+
+    servantList = new Array();
+
+    $(csv).each(function() {
+        
+        var option = document.createElement("option");  
+        var servant = {};
+
+        servant["No"] = this[0];
+        servant["サーヴァント名"] = this[1];
+        servant["クラス"] = this[2];
+        servant["レアリティ"] = this[3];
+        servant["BaseHP"] = this[4];
+        servant["MaxHP"] = this[5];
+        servant["BaseAtk"] = this[6];
+        servant["MaxAtk"] = this[7];
+        servant["天地人"] = this[8];
+        servant["A_N/A"] = this[9];
+        servant["B_N/A"] = this[10];
+        servant["Q_N/A"] = this[11];
+        servant["EX_N/A"] = this[12];
+        servant["N_N/A"] = this[13];
+        servant["N/D"] = this[14];
+        servant["SR"] = this[15];
+        servant["SW"] = this[16];
+        servant["DR"] = this[17];
+        servant["AHIT"] = this[18];
+        servant["BHIT"] = this[19];
+        servant["QHIT"] = this[20];
+        servant["EXHIT"] = this[21];
+        servant["宝具HIT"] = this[22];
+        servant["カード"] = this[23];
+        servant["宝具カード"] = this[24];
+        servant["宝具Lv1"] = this[25];
+        servant["宝具Lv2"] = this[26];
+        servant["宝具Lv3"] = this[27];
+        servant["宝具Lv4"] = this[28];
+        servant["宝具Lv5"] = this[29];
+        servant["クラススキル_固定ダメージ"] = this[30];
+        servant["クラススキル_Aバフ"] = this[31];
+        servant["クラススキル_Bバフ"] = this[32];
+        servant["クラススキル_Qバフ"] = this[33];
+        servant["クラススキル_宝具バフ"] = this[34];
+        servant["クラススキル_クリバフ"] = this[35];
+        servant["クラススキル_Aクリバフ"] = this[36];
+        servant["クラススキル_Bクリバフ"] = this[37];
+        servant["クラススキル_Qクリバフ"] = this[38];
+        servant["クラススキル_NP獲得バフ"] = this[39];
+        servant["クラススキル_NP獲得Aバフ"] = this[40];
+        servant["クラススキル_NP獲得Bバフ"] = this[41];
+        servant["クラススキル_NP獲得Qバフ"] = this[42];
+        servant["クラススキル_スター獲得バフ"] = this[43];
+        servant["クラススキル_スター獲得Aバフ"] = this[44];
+        servant["クラススキル_スター獲得Bバフ"] = this[45];
+        servant["クラススキル_スター獲得Qバフ"] = this[46];
+        servant["性別"] = this[47];
+        servant["属性"] = this[48];
+        servant["性格"] = this[49];
+        servant["特性"] = this[50];
+
+        servantList.push(servant);
+
+        option.value = servant["No"];
+        option.textContent = servant["サーヴァント名"];
+        $("#servant-name")[0].appendChild(option);
+
+    });
+    
+}
+
+/**
+ * コピー
  * @param copy_from コピー元行
  * @param copy_to コピー先行
  */
  function copyParam(copy_from, copy_to){
+    $("#servant_name_" + copy_to).val($("#servant_name_" + copy_from).val());
     $("#atk_" + copy_to).val($("#atk_" + copy_from).val());
     $("#np_dmg_" + copy_to).val($("#np_dmg_" + copy_from).val());
     $("#np_kind_" + copy_to).val($("#np_kind_" + copy_from).val());
     $("#atk_buff_" + copy_to).val($("#atk_buff_" + copy_from).val());
+    $("#def_debuff_" + copy_to).val($("#def_debuff_" + copy_from).val());
     $("#card_buff_" + copy_to).val($("#card_buff_" + copy_from).val());
+    $("#card_debuff_" + copy_to).val($("#card_debuff_" + copy_from).val());
     $("#np_buff_" + copy_to).val($("#np_buff_" + copy_from).val());
     $("#supereffective_buff_" + copy_to).val($("#supereffective_buff_" + copy_from).val());
     $("#supereffective_np_" + copy_to).val($("#supereffective_np_" + copy_from).val());
     $("#fixed_dmg_" + copy_to).val($("#fixed_dmg_" + copy_from).val());
+    $("#special_def_" + copy_to).val($("#special_def_" + copy_from).val());
     $("#class_affinity_" + copy_to).val($("#class_affinity_" + copy_from).val());
     $("#class_servant_" + copy_to).val($("#class_servant_" + copy_from).val());
+    // hidden
+    $("#search_servant_class_" + copy_to).val($("#search_servant_class_" + copy_from).val());
+    $("#search_servant_rare_" + copy_to).val($("#search_servant_rare_" + copy_from).val());
+    $("#search_servant_lvl_" + copy_to).val($("#search_servant_lvl_" + copy_from).val());
+    $("#search_servant_nplvl_" + copy_to).val($("#search_servant_nplvl_" + copy_from).val());
+    $("#search_servant_fou_" + copy_to).val($("#search_servant_fou_" + copy_from).val());
+    $("#search_servant_ce_" + copy_to).val($("#search_servant_ce_" + copy_from).val());
+    $("#servant_No_" + copy_to).val($("#servant_No_" + copy_from).val());
+    $("#servant_Name_" + copy_to).val($("#servant_Name_" + copy_from).val());
+    $("#servant_class_" + copy_to).val($("#servant_class_" + copy_from).val());
+    $("#servant_rare_" + copy_to).val($("#servant_rare_" + copy_from).val());
+    $("#servant_NA_" + copy_to).val($("#servant_NA_" + copy_from).val());
+    $("#servant_SW_" + copy_to).val($("#servant_SW_" + copy_from).val());
+    $("#servant_AHIT_" + copy_to).val($("#servant_AHIT_" + copy_from).val());
+    $("#servant_QHIT_" + copy_to).val($("#servant_QHIT_" + copy_from).val());
+    $("#servant_BHIT_" + copy_to).val($("#servant_BHIT_" + copy_from).val());
+    $("#servant_EXHIT_" + copy_to).val($("#servant_EXHIT_" + copy_from).val());
+    $("#servant_NHIT_" + copy_to).val($("#servant_NHIT_" + copy_from).val());
 }
 
 /**
  * パラメーター初期化
- * @param row 行番号
+ * @param tabNumber タブ番号
  */
- function clearParam(row) {
-
-    $("#atk_" + row).val("");
-    $("#np_dmg_" + row).val("");
-    $("#np_kind_" + row).val("B");
-    $("#atk_buff_" + row).val("");
-    $("#card_buff_" + row).val("");
-    $("#np_buff_" + row).val("");
-    $("#supereffective_buff_" + row).val("");
-    $("#supereffective_np_" + row).val("100");
-    $("#fixed_dmg_" + row).val("");
-    $("#class_affinity_" + row).val("2.0");
-    $("#class_servant_" + row).val("1.00");
-    $("#dmg_min_disad" + row).val("0");
-    $("#dmg_ave_disad" + row).val("0");
-    $("#dmg_max_disad" + row).val("0");
-    $("#dmg_min_normal" + row).val("0");
-    $("#dmg_ave_normal" + row).val("0");
-    $("#dmg_max_normal" + row).val("0");
-    $("#dmg_min_ad" + row).val("0");
-    $("#dmg_ave_ad" + row).val("0");
-    $("#dmg_max_ad" + row).val("0");
-
+function clearParam(tabNumber) {
+    $("#servant_name_" + tabNumber).val("");
+    $("#atk_" + tabNumber).val("");
+    $("#np_dmg_" + tabNumber).val("");
+    $("#np_kind_" + tabNumber).val("B");
+    $("#atk_buff_" + tabNumber).val("");
+    $("#def_debuff_" + tabNumber).val("");
+    $("#card_buff_" + tabNumber).val("");
+    $("#card_debuff_" + tabNumber).val("");
+    $("#np_buff_" + tabNumber).val("");
+    $("#supereffective_buff_" + tabNumber).val("");
+    $("#supereffective_np_" + tabNumber).val("100");
+    $("#fixed_dmg_" + tabNumber).val("");
+    $("#special_def_" + tabNumber).val("");
+    $("#class_affinity_" + tabNumber).val("2.0");
+    $("#class_servant_" + tabNumber).val("1.00");
+    $("#dmg_min_disad" + tabNumber).val("0");
+    $("#dmg_ave_disad" + tabNumber).val("0");
+    $("#dmg_max_disad" + tabNumber).val("0");
+    $("#dmg_min_normal" + tabNumber).val("0");
+    $("#dmg_ave_normal" + tabNumber).val("0");
+    $("#dmg_max_normal" + tabNumber).val("0");
+    $("#dmg_min_ad" + tabNumber).val("0");
+    $("#dmg_ave_ad" + tabNumber).val("0");
+    $("#dmg_max_ad" + tabNumber).val("0");
+    // hidden
+    $("#search_servant_class_" + tabNumber).val("");
+    $("#search_servant_rare_" + tabNumber).val("");
+    $("#search_servant_lvl_" + tabNumber).val("");
+    $("#search_servant_nplvl_" + tabNumber).val("");
+    $("#search_servant_fou_" + tabNumber).val("");
+    $("#search_servant_ce_" + tabNumber).val("");
+    $("#servant_No_" + tabNumber).val("");
+    $("#servant_Name_" + tabNumber).val("");
+    $("#servant_class_" + tabNumber).val("");
+    $("#servant_rare_" + tabNumber).val("");
+    $("#servant_NA_" + tabNumber).val("");
+    $("#servant_SW_" + tabNumber).val("");
+    $("#servant_AHIT_" + tabNumber).val("");
+    $("#servant_QHIT_" + tabNumber).val("");
+    $("#servant_BHIT_" + tabNumber).val("");
+    $("#servant_EXHIT_" + tabNumber).val("");
+    $("#servant_NHIT_" + tabNumber).val("");
 }
 
 /**
@@ -302,8 +750,8 @@ $(function(){
  * @param tabNumber 計算対象行
  */
  function calcMain(tabNumber) {
-    var atk, np_dmg, np_kind, atk_buff, card_buff, np_buff, supereffective_buff, supereffective_np, fixed_dmg,
-    class_affinity, class_servant,
+    var atk, np_dmg, np_kind, atk_buff, def_debuff, card_buff, card_debuff, np_buff, supereffective_buff, supereffective_np, fixed_dmg,
+    special_def, class_affinity, class_servant,
     dmg_min_disad, dmg_ave_disad, dmg_max_disad,
     dmg_min_normal, dmg_ave_normal, dmg_max_normal,
     dmg_min_ad, dmg_ave_ad, dmg_max_ad;
@@ -312,49 +760,66 @@ $(function(){
     atk = 0;
     np_dmg = 0;
     atk_buff = 0;
+    def_debuff = 0;
     card_buff = 0;
+    card_debuff = 0;
     np_buff = 0;
     supereffective_buff = 0;
     supereffective_np = 0;
     fixed_dmg = 0;
+    special_def = 0;
 
     // 計算パラメーター取得
     if ($("#atk_" + tabNumber).val() != "") { atk = parseFloat($("#atk_" + tabNumber).val()); }
     if ($("#np_dmg_" + tabNumber).val() != "") { np_dmg = parseFloat($("#np_dmg_" + tabNumber).val()); }
     np_kind = $("#np_kind_" + tabNumber).val();
     if ($("#atk_buff_" + tabNumber).val() != "") { atk_buff = parseFloat($("#atk_buff_" + tabNumber).val()); }
+    if ($("#def_debuff_" + tabNumber).val() != "") { def_debuff = parseFloat($("#def_debuff_" + tabNumber).val()); }
     if ($("#card_buff_" + tabNumber).val() != "") { card_buff = parseFloat($("#card_buff_" + tabNumber).val()); }
+    if ($("#card_debuff_" + tabNumber).val() != "") { card_debuff = parseFloat($("#card_debuff_" + tabNumber).val()); }
     if ($("#np_buff_" + tabNumber).val() != "") { np_buff = parseFloat($("#np_buff_" + tabNumber).val()); }
     if ($("#supereffective_buff_" + tabNumber).val() != "") { supereffective_buff = parseFloat($("#supereffective_buff_" + tabNumber).val()); }
     if ($("#supereffective_np_" + tabNumber).val() != "") { supereffective_np = parseFloat($("#supereffective_np_" + tabNumber).val()); }
     if ($("#fixed_dmg_" + tabNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + tabNumber).val()); }
+    if ($("#special_def_" + tabNumber).val() != "") { special_def = parseFloat($("#special_def_" + tabNumber).val()); }
     class_affinity = parseFloat($("#class_affinity_" + tabNumber).val());
     class_servant = parseFloat($("#class_servant_" + tabNumber).val());
-    
+
+    // 上限チェック
+    if (atk_buff > 400) { atk_buff = 400 };
+    if (atk_buff < -100) { atk_buff = -100 };
+    if (def_debuff > 100) { def_debuff = 100 };
+    if (card_buff > 400) { card_buff = 400 };
+    if (supereffective_buff > 1000) { supereffective_buff = 1000 };
+    if (np_buff > 500) { np_buff = 500 };
+
+    // デバフ合算
+    atk_buff = atk_buff + def_debuff;
+    card_buff = card_buff + card_debuff;
 
     // 不利計算
     dmg_min_disad = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 0.9, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 0.9);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 0.9);
     dmg_ave_disad = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 0.9, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 1);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 1);
     dmg_max_disad = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 0.9, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 1.099);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 1.099);
 
     // 等倍計算
     dmg_min_normal = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 1, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 0.9);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 0.9);
     dmg_ave_normal = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 1, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 1);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 1);
     dmg_max_normal = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 1, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 1.099);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 1.099);
 
     // 有利計算
     dmg_min_ad = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 1.1, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 0.9);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 0.9);
     dmg_ave_ad = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 1.1, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 1);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 1);
     dmg_max_ad = calcNpDmg(atk, np_dmg, np_kind, card_buff, class_affinity, class_servant, 1.1, atk_buff,
-        supereffective_buff, np_buff, supereffective_np, fixed_dmg, 0, 1.099);
+        supereffective_buff, np_buff, supereffective_np, fixed_dmg, special_def, 1.099);
 
     // 計算結果を反映
     $("#dmg_min_disad").text(Number(rounddown(dmg_min_disad,0)).toLocaleString());
@@ -465,182 +930,4 @@ function calcDmg(atk, atk_buff, card_buff, cri_buff, bbonus, bbonus_all, bchain_
 function rounddown(num, digit) {
     var digitVal = Math.pow(10, digit);
     return (Math.floor(num * digitVal) / digitVal).toFixed(digit);
-}
-
-/**
- * 計算結果を撃破率計算にコピー
- * @param tabNumber コピー対象タブ
- */
- function copyProbInput(tabNumber) {
-    var card_1st, card_2nd, card_3rd, np_kind, atk, atk_b_buff, fixed_dmg,
-        advanced_fixed_dmg_1st, advanced_fixed_dmg_2nd, advanced_fixed_dmg_3rd, advanced_fixed_dmg_Ex, bchain_bonus;
-
-    atk = 0;
-    atk_b_buff = 0;
-    fixed_dmg = 0;
-    advanced_fixed_dmg_1st = 0;
-    advanced_fixed_dmg_2nd = 0;
-    advanced_fixed_dmg_3rd = 0;
-    advanced_fixed_dmg_Ex = 0;
-
-    // Bチェインボーナス分の反映
-    card_1st = $("#card_1st_" + tabNumber).val()
-    card_2nd = $("#card_2nd_" + tabNumber).val()
-    card_3rd = $("#card_3rd_" + tabNumber).val()
-    np_kind = $("#np_kind_" + tabNumber).val();
-    if ($("#atk_" + tabNumber).val() != "") { atk = parseFloat($("#atk_" + tabNumber).val()); }
-    if ($("#b_footprints_" + tabNumber).val() != "") { atk_b_buff = parseFloat($("#b_footprints_" + tabNumber).val()); }
-    if ($("#fixed_dmg_" + tabNumber).val() != "") { fixed_dmg = parseFloat($("#fixed_dmg_" + tabNumber).val()); }
-    if ($("#advanced_fixed_dmg_1st_" + tabNumber).val() != "") { advanced_fixed_dmg_1st = parseFloat($("#advanced_fixed_dmg_1st_" + tabNumber).val()); }
-    if ($("#advanced_fixed_dmg_2nd_" + tabNumber).val() != "") { advanced_fixed_dmg_2nd = parseFloat($("#advanced_fixed_dmg_2nd_" + tabNumber).val()); }
-    if ($("#advanced_fixed_dmg_3rd_" + tabNumber).val() != "") { advanced_fixed_dmg_3rd = parseFloat($("#advanced_fixed_dmg_3rd_" + tabNumber).val()); }
-    if ($("#advanced_fixed_dmg_Ex_" + tabNumber).val() != "") { advanced_fixed_dmg_Ex = parseFloat($("#advanced_fixed_dmg_Ex_" + tabNumber).val()); }
-    bchain_bonus = 0;
-
-    if (card_1st == "NP") {
-        if (np_kind == card_2nd && card_2nd == card_3rd && np_kind == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
-    } else if(card_2nd == "NP") {
-        if (card_1st == np_kind && np_kind == card_3rd && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
-    } else if(card_3rd == "NP") {
-        if (card_1st == card_2nd && card_2nd == np_kind && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
-    } else {
-        if (card_1st == card_2nd && card_2nd == card_3rd && card_1st == "B") { bchain_bonus = 20; atk = atk + atk_b_buff; }
-    };
-
-    if ($("#card_1st_cri_" + tabNumber).val() == "zero") {
-        $("#dmg_1st").val("0");
-        $("#fixed_1st").val("0");
-    } else {
-        $("#dmg_1st").val(Number($("#dmg_ave_1st").text().replace(/,/g, "")));
-        if (card_1st != "NP") {
-            $("#fixed_1st").val(fixed_dmg + advanced_fixed_dmg_1st + atk * bchain_bonus / 100);
-        } else {
-            $("#fixed_1st").val(fixed_dmg);
-        }
-    };
-
-    if ($("#card_2nd_cri_" + tabNumber).val() == "zero") {
-        $("#dmg_2nd").val("0");
-        $("#fixed_2nd").val("0");
-    } else {
-        $("#dmg_2nd").val(Number($("#dmg_ave_2nd").text().replace(/,/g, "")));
-        if (card_2nd != "NP") {
-            $("#fixed_2nd").val(fixed_dmg + advanced_fixed_dmg_2nd + atk * bchain_bonus / 100);
-        } else {
-            $("#fixed_2nd").val(fixed_dmg);
-        }
-    };
-
-    if ($("#card_3rd_cri_" + tabNumber).val() == "zero") {
-        $("#dmg_3rd").val("0");
-        $("#fixed_3rd").val("0");
-    } else {
-        $("#dmg_3rd").val(Number($("#dmg_ave_3rd").text().replace(/,/g, "")));
-        if (card_3rd != "NP") {
-            $("#fixed_3rd").val(fixed_dmg + advanced_fixed_dmg_3rd + atk * bchain_bonus / 100);
-        } else {
-            $("#fixed_3rd").val(fixed_dmg);
-        }
-    };
-    
-    if ($("#ex_cri_" + tabNumber).val() == "zero") {
-        $("#dmg_Ex").val("0");
-        $("#fixed_Ex").val("0");
-    } else {
-        $("#dmg_Ex").val($("#dmg_ave_ex").text().replace(/,/g, ""));
-        $("#fixed_Ex").val(fixed_dmg + advanced_fixed_dmg_Ex);
-    };
-
-    $("#dmg_total").text(Number(parseFloat($("#dmg_1st").val()) + parseFloat($("#dmg_2nd").val()) + parseFloat($("#dmg_3rd").val()) + parseFloat($("#dmg_Ex").val())).toLocaleString());
-    $("#fixed_total").text(Number(parseFloat($("#fixed_1st").val()) + parseFloat($("#fixed_2nd").val()) + parseFloat($("#fixed_3rd").val()) + parseFloat($("#fixed_Ex").val())).toLocaleString());
-
-}
-
-/**
- * 撃破率計算
- */
-function calcProb() {
-    var dmg_1st, dmg_2nd, dmg_3rd, dmg_Ex, buff_1st, buff_2nd, buff_3rd, buff_Ex, enemy_hp;
-
-    dmg_1st = 0;
-    dmg_2nd = 0;
-    dmg_3rd = 0;
-    dmg_Ex = 0;
-    buff_1st = 0;
-    buff_2nd = 0;
-    buff_3rd = 0;
-    buff_Ex = 0;
-    enemy_hp = 0;
-
-    if ($("#dmg_1st").val() != "") { dmg_1st = parseFloat($("#dmg_1st").val()); }
-    if ($("#dmg_2nd").val() != "") { dmg_2nd = parseFloat($("#dmg_2nd").val()); }
-    if ($("#dmg_3rd").val() != "") { dmg_3rd = parseFloat($("#dmg_3rd").val()); }
-    if ($("#dmg_Ex").val() != "") { dmg_Ex = parseFloat($("#dmg_Ex").val()); }
-    $("#dmg_total").text(Number(dmg_1st + dmg_2nd + dmg_3rd + dmg_Ex).toLocaleString());
- 
-    if ($("#fixed_1st").val() != "") { buff_1st = parseFloat($("#fixed_1st").val()); }
-    if ($("#fixed_2nd").val() != "") { buff_2nd = parseFloat($("#fixed_2nd").val()); }
-    if ($("#fixed_3rd").val() != "") { buff_3rd = parseFloat($("#fixed_3rd").val()); }
-    if ($("#fixed_Ex").val() != "") { buff_Ex = parseFloat($("#fixed_Ex").val()); }
-    $("#fixed_total").text(Number(buff_1st + buff_2nd + buff_3rd + buff_Ex).toLocaleString());
-
-    if ($("#enemy_hp").val() != "") { enemy_hp = parseFloat($("#enemy_hp").val()); }
-
-    var rand = new Array(200);
-    for (let cnt = 0; cnt < 200; cnt++) {
-        rand[cnt] = 0.9 + 0.001 * cnt;
-    }
-
-    var first = new Array(40000);
-    var second = new Array(40000);
-    for (let x = 0; x < 200; x++) {
-        for (let y = 0; y < 200; y++) {
-            first[200 * x + y] = calc_damage(dmg_1st, buff_1st, 0, 0, 0, 0, 0, 0, rand[x]) + calc_damage(0, 0, dmg_2nd, buff_2nd, 0, 0, 0, 0, rand[y]);
-            second[200 * x + y] = calc_damage(0, 0, 0, 0, dmg_3rd, buff_3rd, 0, 0, rand[x]) + calc_damage(0, 0, 0, 0, 0, 0, dmg_Ex, buff_Ex, rand[y]);
-        }
-    }
-    first.sort((a, b) => a - b);
-    second.sort((a, b) => a - b);
-
-    var ret = 0;
-    for (let x = 0; x < 40000; x++) {
-        ret += 40000 - binarySearch(second, enemy_hp - first[x]);
-    }
-    ret = ret / (40000 * 4);
-
-    $("#prob_result").text(Math.floor(ret) / 100 + "%");
-
-};
-
-/**
- * ダメージ乱数計算
- */
-function calc_damage(l1, s1, l2, s2, l3, s3, l4, s4, rand) {
-    return Math.floor((l1 - s1) * rand + s1) + Math.floor((l2 - s2) * rand + s2) + Math.floor((l3 - s3) * rand + s3) + Math.floor((l4 - s4) * rand + s4);
-};
-
-/**
- * 2分探索
- * @param arr ソート済みの探索対象配列
- * @param target 探索する値
- * @return 探索結果の添字 見つからなかった場合は-1を返す
- */
-function binarySearch(arr, target) {
-
-    let min = -1;
-    let max = arr.length;
-
-    while (max - min > 1) {
-
-        let mid = Math.floor((min + max) / 2);
-
-        if (arr[mid] < target) {
-            min = mid;
-        } else {
-            max = mid;
-        }
-    }
-
-    return max;
-
 }
