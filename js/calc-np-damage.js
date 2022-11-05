@@ -5,7 +5,6 @@ const correctio_lv110 = { "0": 1.703, "1": 1.847, "2": 1.703, "3": 1.579, "4": 1
 const correctio_lv120 = { "0": 1.859, "1": 2.016, "2": 1.859, "3": 1.724, "4": 1.506, "5": 1.337 };
 let servantList = null;
 
-
 $(function(){
 
     const tabRadio = $("*[name=tab-radio]");
