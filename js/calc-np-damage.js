@@ -228,7 +228,7 @@ $(function(){
     /**
      * サーヴァント検索画面表示イベント
      */
-     $("#search-modal").on("show.bs.modal", function () {
+    $("#search-modal").on("show.bs.modal", function () {
 
         var tabNumber = $("input[name='tab-radio']:checked").val();
 
@@ -340,168 +340,171 @@ $(function(){
 
         var tabNumber = $("input[name='tab-radio']:checked").val();
 
-        // 入力初期化
-        clearParam(tabNumber);
+        if ($("#servant-name").val() != null) {
+            // 入力初期化
+            clearParam(tabNumber);
+        
+            $(servantList).each(function() {
+                
+                if ($("#servant-name").val() == this["No"]) {
 
-        $(servantList).each(function() {
-            
-            if ($("#servant-name").val() == this["No"]) {
+                    var atk;
 
-                var atk;
+                    switch ($("input[name='rdo_lvl']:checked").val()) {
+                        case "MAX" :
+                            atk = Number(this["MaxAtk"]);
+                            break;
+                        case "100" :
+                            atk = rounddown(Number(this["BaseAtk"]) 
+                                + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                                * Number(correctio_lv100[Number(this["レアリティ"])]),0);
+                            break;
+                        case "110" :
+                            atk = rounddown(Number(this["BaseAtk"]) 
+                                + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                                * Number(correctio_lv110[Number(this["レアリティ"])]),0);
+                            break;
+                        case "120" :
+                            atk = rounddown(Number(this["BaseAtk"]) 
+                                + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
+                                * Number(correctio_lv120[Number(this["レアリティ"])]),0);
+                            break;
+                        default :
+                            break;
+                    }
 
-                switch ($("input[name='rdo_lvl']:checked").val()) {
-                    case "MAX" :
-                        atk = Number(this["MaxAtk"]);
-                        break;
-                    case "100" :
-                        atk = rounddown(Number(this["BaseAtk"]) 
-                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
-                            * Number(correctio_lv100[Number(this["レアリティ"])]),0);
-                        break;
-                    case "110" :
-                        atk = rounddown(Number(this["BaseAtk"]) 
-                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
-                            * Number(correctio_lv110[Number(this["レアリティ"])]),0);
-                        break;
-                    case "120" :
-                        atk = rounddown(Number(this["BaseAtk"]) 
-                            + (Number(this["MaxAtk"]) - Number(this["BaseAtk"])) 
-                            * Number(correctio_lv120[Number(this["レアリティ"])]),0);
-                        break;
-                    default :
-                        break;
+                    // サーヴァント名
+                    $("#servant_name_" + tabNumber).val(this["サーヴァント名"]);
+                    // ATK
+                    $("#atk_" + tabNumber).val(Number(atk) + Number($("input[name='rdo_fou']:checked").val()) + Number($("input[name='rdo_ce']:checked").val()));
+                    // 宝具倍率
+                    switch ($("input[name='rdo_np_lvl']:checked").val()) {
+                        case "1" :
+                            if (this["宝具Lv1"] != "0") {
+                                $("#np_dmg_" + tabNumber).val(this["宝具Lv1"]);
+                            }
+                            break;
+                        case "2" :
+                            if (this["宝具Lv2"] != "0") {
+                                $("#np_dmg_" + tabNumber).val(this["宝具Lv2"]);
+                            }
+                            break;
+                        case "3" :
+                            if (this["宝具Lv3"] != "0") {
+                                $("#np_dmg_" + tabNumber).val(this["宝具Lv3"]);
+                            }
+                            break;
+                        case "4" :
+                            if (this["宝具Lv4"] != "0") {
+                                $("#np_dmg_" + tabNumber).val(this["宝具Lv4"]);
+                            }
+                            break;
+                        case "5" :
+                            if (this["宝具Lv5"] != "0") {
+                                $("#np_dmg_" + tabNumber).val(this["宝具Lv5"]);
+                            }
+                            break;
+                        default :
+                            break;
+                    }
+                    // 宝具種類
+                    $("#np_kind_" + tabNumber).val(this["宝具カード"]);
+                    // クラススキル_カード
+                    switch (this["宝具カード"]) {
+                        case "B" :
+                            if (this["クラススキル_Bバフ"] != "0"){
+                                $("#card_buff_" + tabNumber).val(this["クラススキル_Bバフ"]);
+                            }
+                            break;
+                        case "A" :
+                            if (this["クラススキル_Aバフ"] != "0") {
+                                $("#card_buff_" + tabNumber).val(this["クラススキル_Aバフ"]);
+                            }
+                            break;
+                        case "Q" :
+                            if (this["クラススキル_Qバフ"] != "0") {
+                                $("#card_buff_" + tabNumber).val(this["クラススキル_Qバフ"]);
+                            }
+                            break;
+                        default :
+                            break;
+                    }
+                    // クラススキル_宝具
+                    if (this["クラススキル_宝具バフ"] != "0") {
+                        $("#np_buff_" + tabNumber).val(this["クラススキル_宝具バフ"]);
+                    }
+                    // クラススキル_固定ダメージ
+                    if (this["クラススキル_固定ダメージ"] != "0") {
+                        $("#fixed_dmg_" + tabNumber).val(this["クラススキル_固定ダメージ"]);
+                    }
+                    // クラス相性
+                    switch (this["クラス"]) {
+                        case "剣" :
+                        case "騎" :
+                            $("#class_affinity_" + tabNumber).val("2.0");
+                            $("#class_servant_" + tabNumber).val("1.00");
+                            break;
+                        case "弓" :
+                            $("#class_affinity_" + tabNumber).val("2.0");
+                            $("#class_servant_" + tabNumber).val("0.95");
+                            break;
+                        case "槍" :
+                            $("#class_affinity_" + tabNumber).val("2.0");
+                            $("#class_servant_" + tabNumber).val("1.05");
+                            break;
+                        case "術" :
+                        case "殺" :
+                            $("#class_affinity_" + tabNumber).val("2.0");
+                            $("#class_servant_" + tabNumber).val("0.90");
+                            break;
+                        case "狂" :
+                            $("#class_affinity_" + tabNumber).val("1.5");
+                            $("#class_servant_" + tabNumber).val("1.10");
+                            break;
+                        case "盾" :
+                        case "月" :
+                        case "降" :
+                            $("#class_affinity_" + tabNumber).val("1.0");
+                            $("#class_servant_" + tabNumber).val("1.00");
+                            break;
+                        case "裁" :
+                        case "讐" :
+                            $("#class_affinity_" + tabNumber).val("1.0");
+                            $("#class_servant_" + tabNumber).val("1.10");
+                            break;
+                        case "分" :
+                        case "詐" :
+                            $("#class_affinity_" + tabNumber).val("1.5");
+                            $("#class_servant_" + tabNumber).val("1.00");
+                            break;
+                        default :
+                            break;
+                    }
+
+                    // hidden
+                    $("#search_servant_class_" + tabNumber).val($("#servant-class").val());
+                    $("#search_servant_rare_" + tabNumber).val($("#servant-rare").val());
+                    $("#search_servant_lvl_" + tabNumber).val($("input[name='rdo_lvl']:checked").val());
+                    $("#search_servant_nplvl_" + tabNumber).val($("input[name='rdo_np_lvl']:checked").val());
+                    $("#search_servant_fou_" + tabNumber).val($("input[name='rdo_fou']:checked").val());
+                    $("#search_servant_ce_" + tabNumber).val($("input[name='rdo_ce']:checked").val());
+                    $("#servant_No_" + tabNumber).val(this["No"]);
+                    $("#servant_Name_" + tabNumber).val(this["サーヴァント名"]);
+                    $("#servant_class_" + tabNumber).val(this["クラス"]);
+                    $("#servant_rare_" + tabNumber).val(this["レアリティ"]);
+                    $("#servant_NA_" + tabNumber).val(this["N_N/A"]);
+                    $("#servant_SR_" + tabNumber).val(this["SR"]);
+                    $("#servant_AHIT_" + tabNumber).val(this["AHIT"]);
+                    $("#servant_QHIT_" + tabNumber).val(this["QHIT"]);
+                    $("#servant_BHIT_" + tabNumber).val(this["BHIT"]);
+                    $("#servant_EXHIT_" + tabNumber).val(this["EXHIT"]);
+                    $("#servant_NHIT_" + tabNumber).val(this["NHIT"]);
+
                 }
 
-                // サーヴァント名
-                $("#servant_name_" + tabNumber).val(this["サーヴァント名"]);
-                // ATK
-                $("#atk_" + tabNumber).val(Number(atk) + Number($("input[name='rdo_fou']:checked").val()) + Number($("input[name='rdo_ce']:checked").val()));
-                // 宝具倍率
-                switch ($("input[name='rdo_np_lvl']:checked").val()) {
-                    case "1" :
-                        if (this["宝具Lv1"] != "0") {
-                            $("#np_dmg_" + tabNumber).val(this["宝具Lv1"]);
-                        }
-                        break;
-                    case "2" :
-                        if (this["宝具Lv2"] != "0") {
-                            $("#np_dmg_" + tabNumber).val(this["宝具Lv2"]);
-                        }
-                        break;
-                    case "3" :
-                        if (this["宝具Lv3"] != "0") {
-                            $("#np_dmg_" + tabNumber).val(this["宝具Lv3"]);
-                        }
-                        break;
-                    case "4" :
-                        if (this["宝具Lv4"] != "0") {
-                            $("#np_dmg_" + tabNumber).val(this["宝具Lv4"]);
-                        }
-                        break;
-                    case "5" :
-                        if (this["宝具Lv5"] != "0") {
-                            $("#np_dmg_" + tabNumber).val(this["宝具Lv5"]);
-                        }
-                        break;
-                    default :
-                        break;
-                }
-                // 宝具種類
-                $("#np_kind_" + tabNumber).val(this["宝具カード"]);
-                // クラススキル_カード
-                switch (this["宝具カード"]) {
-                    case "B" :
-                        if (this["クラススキル_Bバフ"] != "0"){
-                            $("#card_buff_" + tabNumber).val(this["クラススキル_Bバフ"]);
-                        }
-                        break;
-                    case "A" :
-                        if (this["クラススキル_Aバフ"] != "0") {
-                            $("#card_buff_" + tabNumber).val(this["クラススキル_Aバフ"]);
-                        }
-                        break;
-                    case "Q" :
-                        if (this["クラススキル_Qバフ"] != "0") {
-                            $("#card_buff_" + tabNumber).val(this["クラススキル_Qバフ"]);
-                        }
-                        break;
-                    default :
-                        break;
-                }
-                // クラススキル_宝具
-                if (this["クラススキル_宝具バフ"] != "0") {
-                    $("#np_buff_" + tabNumber).val(this["クラススキル_宝具バフ"]);
-                }
-                // クラススキル_固定ダメージ
-                if (this["クラススキル_固定ダメージ"] != "0") {
-                    $("#fixed_dmg_" + tabNumber).val(this["クラススキル_固定ダメージ"]);
-                }
-                // クラス相性
-                switch (this["クラス"]) {
-                    case "剣" :
-                    case "騎" :
-                        $("#class_affinity_" + tabNumber).val("2.0");
-                        $("#class_servant_" + tabNumber).val("1.00");
-                        break;
-                    case "弓" :
-                        $("#class_affinity_" + tabNumber).val("2.0");
-                        $("#class_servant_" + tabNumber).val("0.95");
-                        break;
-                    case "槍" :
-                        $("#class_affinity_" + tabNumber).val("2.0");
-                        $("#class_servant_" + tabNumber).val("1.05");
-                        break;
-                    case "術" :
-                    case "殺" :
-                        $("#class_affinity_" + tabNumber).val("2.0");
-                        $("#class_servant_" + tabNumber).val("0.90");
-                        break;
-                    case "狂" :
-                        $("#class_affinity_" + tabNumber).val("1.5");
-                        $("#class_servant_" + tabNumber).val("1.10");
-                        break;
-                    case "盾" :
-                    case "月" :
-                    case "降" :
-                        $("#class_affinity_" + tabNumber).val("1.0");
-                        $("#class_servant_" + tabNumber).val("1.00");
-                        break;
-                    case "裁" :
-                    case "讐" :
-                        $("#class_affinity_" + tabNumber).val("1.0");
-                        $("#class_servant_" + tabNumber).val("1.10");
-                        break;
-                    case "分" :
-                    case "詐" :
-                        $("#class_affinity_" + tabNumber).val("1.5");
-                        $("#class_servant_" + tabNumber).val("1.00");
-                        break;
-                    default :
-                        break;
-                }
+            });
 
-                // hidden
-                $("#search_servant_class_" + tabNumber).val($("#servant-class").val());
-                $("#search_servant_rare_" + tabNumber).val($("#servant-rare").val());
-                $("#search_servant_lvl_" + tabNumber).val($("input[name='rdo_lvl']:checked").val());
-                $("#search_servant_nplvl_" + tabNumber).val($("input[name='rdo_np_lvl']:checked").val());
-                $("#search_servant_fou_" + tabNumber).val($("input[name='rdo_fou']:checked").val());
-                $("#search_servant_ce_" + tabNumber).val($("input[name='rdo_ce']:checked").val());
-                $("#servant_No_" + tabNumber).val(this["No"]);
-                $("#servant_Name_" + tabNumber).val(this["サーヴァント名"]);
-                $("#servant_class_" + tabNumber).val(this["クラス"]);
-                $("#servant_rare_" + tabNumber).val(this["レアリティ"]);
-                $("#servant_NA_" + tabNumber).val(this["N_N/A"]);
-                $("#servant_SW_" + tabNumber).val(this["SW"]);
-                $("#servant_AHIT_" + tabNumber).val(this["AHIT"]);
-                $("#servant_QHIT_" + tabNumber).val(this["QHIT"]);
-                $("#servant_BHIT_" + tabNumber).val(this["BHIT"]);
-                $("#servant_EXHIT_" + tabNumber).val(this["EXHIT"]);
-                $("#servant_NHIT_" + tabNumber).val(this["NHIT"]);
-
-            }
-
-        });
+        }
 
         // 再計算
         calcMain(tabNumber)
@@ -515,6 +518,19 @@ $(function(){
 
     // CSVの読み込み
     $.get("https://fategoplayer.github.io/fgodamagecalculator-tab/servant_data.csv", parseCsv, "text");
+
+    /**
+     * NP・スター計算表示イベント
+     */
+    $("#np-star-modal").on("show.bs.modal", function () {
+
+        var tabNumber = $("input[name='tab-radio']:checked").val();
+        
+        $("#np_na").val($("#servant_NA_" + tabNumber).val());
+        $("#star_rate").val($("#servant_SR_" + tabNumber).val());
+        $("#np_hit").val($("#servant_NHIT_" + tabNumber).val());
+
+    });
 
 });
 
@@ -687,7 +703,7 @@ function parseCsv(data) {
     $("#servant_class_" + copy_to).val($("#servant_class_" + copy_from).val());
     $("#servant_rare_" + copy_to).val($("#servant_rare_" + copy_from).val());
     $("#servant_NA_" + copy_to).val($("#servant_NA_" + copy_from).val());
-    $("#servant_SW_" + copy_to).val($("#servant_SW_" + copy_from).val());
+    $("#servant_SR_" + copy_to).val($("#servant_SR_" + copy_from).val());
     $("#servant_AHIT_" + copy_to).val($("#servant_AHIT_" + copy_from).val());
     $("#servant_QHIT_" + copy_to).val($("#servant_QHIT_" + copy_from).val());
     $("#servant_BHIT_" + copy_to).val($("#servant_BHIT_" + copy_from).val());
@@ -736,7 +752,7 @@ function clearParam(tabNumber) {
     $("#servant_class_" + tabNumber).val("");
     $("#servant_rare_" + tabNumber).val("");
     $("#servant_NA_" + tabNumber).val("");
-    $("#servant_SW_" + tabNumber).val("");
+    $("#servant_SR_" + tabNumber).val("");
     $("#servant_AHIT_" + tabNumber).val("");
     $("#servant_QHIT_" + tabNumber).val("");
     $("#servant_BHIT_" + tabNumber).val("");
