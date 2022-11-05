@@ -13,6 +13,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.11/jquery.csv.min.js"></script>
         <script async charset="UTF-8" type="text/javascript" src="js/main.js"></script>
     </head>
     <body>
@@ -42,17 +43,40 @@
                 <div class="contents-item" id="calc_0">
                     <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
                         <tr>
-                            <th>ATK</th>
+                            <th>対象</th>
                             <td colspan="7">
                                 <div class="d-flex align-items-center">
-                                    <input type="number" id="atk_0" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <input type="text" tabindex="-1" data-bs-toggle="modal" data-bs-target="#search-modal" id="servant_name_0" class="form-control servant_name" placeholder="サーヴァント選択..." readonly>
                                     <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
                                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                                         </svg>
                                     </a>
+                                    <input type="hidden" id="search_servant_class_0">
+                                    <input type="hidden" id="search_servant_rare_0">
+                                    <input type="hidden" id="search_servant_lvl_0">
+                                    <input type="hidden" id="search_servant_nplvl_0">
+                                    <input type="hidden" id="search_servant_fou_0">
+                                    <input type="hidden" id="search_servant_ce_0">
+                                    <input type="hidden" id="servant_No_0">
+                                    <input type="hidden" id="servant_Name_0">
+                                    <input type="hidden" id="servant_class_0">
+                                    <input type="hidden" id="servant_rare_0">
+                                    <input type="hidden" id="servant_NA_0">
+                                    <input type="hidden" id="servant_SW_0">
+                                    <input type="hidden" id="servant_AHIT_0">
+                                    <input type="hidden" id="servant_QHIT_0">
+                                    <input type="hidden" id="servant_BHIT_0">
+                                    <input type="hidden" id="servant_EXHIT_0">
+                                    <input type="hidden" id="servant_NHIT_0">
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <input type="number" id="atk_0" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
                             </td>
                         </tr>
                         <tr class="align-middle">
@@ -69,12 +93,14 @@
                         </tr>
                         <tr>
                             <th>攻撃<br>バフ</th>
-                            <td colspan="7"><input type="number" id="atk_buff_0" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <td colspan="3"><input type="number" id="atk_buff_0" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <th>防御<br>デバフ</th>
+                            <td colspan="3"><input type="number" id="def_debuff_0" max="100" min="-100" step="10" class="form-control def_debuff" placeholder="0"></td>
                         </tr>
                         <tr>
-                            <th>Bバフ</tg>
+                            <th>Bバフ</th>
                             <td colspan="3"><input type="number" id="b_card_buff_0" max="400" min="-100" step="10" class="form-control b_card_buff" placeholder="0"></td>
-                            <th>Bクリ<br>バフ</tg>
+                            <th>Bクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="b_card_cri_buff_0" max="500" min="-100" step="10" class="form-control b_card_cri_buff" placeholder="0"></td>
                         </tr>
                         <tr>
@@ -88,6 +114,13 @@
                             <td colspan="3"><input type="number" id="q_card_buff_0" max="400" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
                             <th>Qクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="q_card_cri_buff_0" max="500" min="-100" step="10" class="form-control q_card_cri_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>デバフ<br>B/A/Q</th>
+                            <td colspan="2"><input type="number" id="b_card_debuff_0" max="9999" min="-100" step="10" class="form-control b_card_debuff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="a_card_debuff_0" max="9999" min="-100" step="10" class="form-control a_card_buff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="q_card_debuff_0" max="9999" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>クリ<br>バフ</th>
@@ -307,17 +340,40 @@
                 <div class="contents-item" id="calc_1">
                     <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
                         <tr>
-                            <th>ATK</th>
+                            <th>対象</th>
                             <td colspan="7">
                                 <div class="d-flex align-items-center">
-                                    <input type="number" id="atk_1" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <input type="text" tabindex="-1" data-bs-toggle="modal" data-bs-target="#search-modal" id="servant_name_1" class="form-control servant_name" placeholder="サーヴァント選択..." readonly>
                                     <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
                                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                                         </svg>
                                     </a>
+                                    <input type="hidden" id="search_servant_class_1">
+                                    <input type="hidden" id="search_servant_rare_1">
+                                    <input type="hidden" id="search_servant_lvl_1">
+                                    <input type="hidden" id="search_servant_nplvl_1">
+                                    <input type="hidden" id="search_servant_fou_1">
+                                    <input type="hidden" id="search_servant_ce_1">
+                                    <input type="hidden" id="servant_No_1">
+                                    <input type="hidden" id="servant_Name_1">
+                                    <input type="hidden" id="servant_class_1">
+                                    <input type="hidden" id="servant_rare_1">
+                                    <input type="hidden" id="servant_NA_1">
+                                    <input type="hidden" id="servant_SW_1">
+                                    <input type="hidden" id="servant_AHIT_1">
+                                    <input type="hidden" id="servant_QHIT_1">
+                                    <input type="hidden" id="servant_BHIT_1">
+                                    <input type="hidden" id="servant_EXHIT_1">
+                                    <input type="hidden" id="servant_NHIT_1">
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <input type="number" id="atk_1" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
                             </td>
                         </tr>
                         <tr class="align-middle">
@@ -334,12 +390,14 @@
                         </tr>
                         <tr>
                             <th>攻撃<br>バフ</th>
-                            <td colspan="7"><input type="number" id="atk_buff_1" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <td colspan="3"><input type="number" id="atk_buff_1" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <th>防御<br>デバフ</th>
+                            <td colspan="3"><input type="number" id="def_debuff_1" max="100" min="-100" step="10" class="form-control def_debuff" placeholder="0"></td>
                         </tr>
                         <tr>
-                            <th>Bバフ</tg>
+                            <th>Bバフ</th>
                             <td colspan="3"><input type="number" id="b_card_buff_1" max="400" min="-100" step="10" class="form-control b_card_buff" placeholder="0"></td>
-                            <th>Bクリ<br>バフ</tg>
+                            <th>Bクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="b_card_cri_buff_1" max="500" min="-100" step="10" class="form-control b_card_cri_buff" placeholder="0"></td>
                         </tr>
                         <tr>
@@ -353,6 +411,13 @@
                             <td colspan="3"><input type="number" id="q_card_buff_1" max="400" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
                             <th>Qクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="q_card_cri_buff_1" max="500" min="-100" step="10" class="form-control q_card_cri_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>デバフ<br>B/A/Q</th>
+                            <td colspan="2"><input type="number" id="b_card_debuff_1" max="9999" min="-100" step="10" class="form-control b_card_debuff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="a_card_debuff_1" max="9999" min="-100" step="10" class="form-control a_card_buff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="q_card_debuff_1" max="9999" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>クリ<br>バフ</th>
@@ -572,17 +637,40 @@
                 <div class="contents-item" id="calc_2">
                     <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
                         <tr>
-                            <th>ATK</th>
+                            <th>対象</th>
                             <td colspan="7">
                                 <div class="d-flex align-items-center">
-                                    <input type="number" id="atk_2" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <input type="text" tabindex="-1" data-bs-toggle="modal" data-bs-target="#search-modal" id="servant_name_2" class="form-control servant_name" placeholder="サーヴァント選択..." readonly>
                                     <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
                                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                                         </svg>
                                     </a>
+                                    <input type="hidden" id="search_servant_class_2">
+                                    <input type="hidden" id="search_servant_rare_2">
+                                    <input type="hidden" id="search_servant_lvl_2">
+                                    <input type="hidden" id="search_servant_nplvl_2">
+                                    <input type="hidden" id="search_servant_fou_2">
+                                    <input type="hidden" id="search_servant_ce_2">
+                                    <input type="hidden" id="servant_No_2">
+                                    <input type="hidden" id="servant_Name_2">
+                                    <input type="hidden" id="servant_class_2">
+                                    <input type="hidden" id="servant_rare_2">
+                                    <input type="hidden" id="servant_NA_2">
+                                    <input type="hidden" id="servant_SW_2">
+                                    <input type="hidden" id="servant_AHIT_2">
+                                    <input type="hidden" id="servant_QHIT_2">
+                                    <input type="hidden" id="servant_BHIT_2">
+                                    <input type="hidden" id="servant_EXHIT_2">
+                                    <input type="hidden" id="servant_NHIT_2">
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <input type="number" id="atk_2" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
                             </td>
                         </tr>
                         <tr class="align-middle">
@@ -599,12 +687,14 @@
                         </tr>
                         <tr>
                             <th>攻撃<br>バフ</th>
-                            <td colspan="7"><input type="number" id="atk_buff_2" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <td colspan="3"><input type="number" id="atk_buff_2" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <th>防御<br>デバフ</th>
+                            <td colspan="3"><input type="number" id="def_debuff_2" max="100" min="-100" step="10" class="form-control def_debuff" placeholder="0"></td>
                         </tr>
                         <tr>
-                            <th>Bバフ</tg>
+                            <th>Bバフ</th>
                             <td colspan="3"><input type="number" id="b_card_buff_2" max="400" min="-100" step="10" class="form-control b_card_buff" placeholder="0"></td>
-                            <th>Bクリ<br>バフ</tg>
+                            <th>Bクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="b_card_cri_buff_2" max="500" min="-100" step="10" class="form-control b_card_cri_buff" placeholder="0"></td>
                         </tr>
                         <tr>
@@ -618,6 +708,13 @@
                             <td colspan="3"><input type="number" id="q_card_buff_2" max="400" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
                             <th>Qクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="q_card_cri_buff_2" max="500" min="-100" step="10" class="form-control q_card_cri_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>デバフ<br>B/A/Q</th>
+                            <td colspan="2"><input type="number" id="b_card_debuff_2" max="9999" min="-100" step="10" class="form-control b_card_debuff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="a_card_debuff_2" max="9999" min="-100" step="10" class="form-control a_card_buff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="q_card_debuff_2" max="9999" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>クリ<br>バフ</th>
@@ -837,17 +934,40 @@
                 <div class="contents-item" id="calc_3">
                     <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
                         <tr>
-                            <th>ATK</th>
+                            <th>対象</th>
                             <td colspan="7">
                                 <div class="d-flex align-items-center">
-                                    <input type="number" id="atk_3" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <input type="text" tabindex="-1" data-bs-toggle="modal" data-bs-target="#search-modal" id="servant_name_3" class="form-control servant_name" placeholder="サーヴァント選択..." readonly>
                                     <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
                                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                                         </svg>
                                     </a>
+                                    <input type="hidden" id="search_servant_class_3">
+                                    <input type="hidden" id="search_servant_rare_3">
+                                    <input type="hidden" id="search_servant_lvl_3">
+                                    <input type="hidden" id="search_servant_nplvl_3">
+                                    <input type="hidden" id="search_servant_fou_3">
+                                    <input type="hidden" id="search_servant_ce_3">
+                                    <input type="hidden" id="servant_No_3">
+                                    <input type="hidden" id="servant_Name_3">
+                                    <input type="hidden" id="servant_class_3">
+                                    <input type="hidden" id="servant_rare_3">
+                                    <input type="hidden" id="servant_NA_3">
+                                    <input type="hidden" id="servant_SW_3">
+                                    <input type="hidden" id="servant_AHIT_3">
+                                    <input type="hidden" id="servant_QHIT_3">
+                                    <input type="hidden" id="servant_BHIT_3">
+                                    <input type="hidden" id="servant_EXHIT_3">
+                                    <input type="hidden" id="servant_NHIT_3">
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <input type="number" id="atk_3" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
                             </td>
                         </tr>
                         <tr class="align-middle">
@@ -864,12 +984,14 @@
                         </tr>
                         <tr>
                             <th>攻撃<br>バフ</th>
-                            <td colspan="7"><input type="number" id="atk_buff_3" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <td colspan="3"><input type="number" id="atk_buff_3" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <th>防御<br>デバフ</th>
+                            <td colspan="3"><input type="number" id="def_debuff_3" max="100" min="-100" step="10" class="form-control def_debuff" placeholder="0"></td>
                         </tr>
                         <tr>
-                            <th>Bバフ</tg>
+                            <th>Bバフ</th>
                             <td colspan="3"><input type="number" id="b_card_buff_3" max="400" min="-100" step="10" class="form-control b_card_buff" placeholder="0"></td>
-                            <th>Bクリ<br>バフ</tg>
+                            <th>Bクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="b_card_cri_buff_3" max="500" min="-100" step="10" class="form-control b_card_cri_buff" placeholder="0"></td>
                         </tr>
                         <tr>
@@ -883,6 +1005,13 @@
                             <td colspan="3"><input type="number" id="q_card_buff_3" max="400" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
                             <th>Qクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="q_card_cri_buff_3" max="500" min="-100" step="10" class="form-control q_card_cri_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>デバフ<br>B/A/Q</th>
+                            <td colspan="2"><input type="number" id="b_card_debuff_3" max="9999" min="-100" step="10" class="form-control b_card_debuff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="a_card_debuff_3" max="9999" min="-100" step="10" class="form-control a_card_buff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="q_card_debuff_3" max="9999" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>クリ<br>バフ</th>
@@ -1102,17 +1231,40 @@
                 <div class="contents-item" id="calc_4">
                     <table id="calc-inp-tbl" class="table table-bordered calc-inp-tbl">
                         <tr>
-                            <th>ATK</th>
+                            <th>対象</th>
                             <td colspan="7">
                                 <div class="d-flex align-items-center">
-                                    <input type="number" id="atk_4" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
+                                    <input type="text" tabindex="-1" data-bs-toggle="modal" data-bs-target="#search-modal" id="servant_name_4" class="form-control servant_name" placeholder="サーヴァント選択..." readonly>
                                     <a class="text-body" href="#" tabindex="-1" data-bs-toggle="modal" data-bs-target="#tool-modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square ms-1" viewBox="0 0 16 16">
                                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                                         </svg>
                                     </a>
+                                    <input type="hidden" id="search_servant_class_4">
+                                    <input type="hidden" id="search_servant_rare_4">
+                                    <input type="hidden" id="search_servant_lvl_4">
+                                    <input type="hidden" id="search_servant_nplvl_4">
+                                    <input type="hidden" id="search_servant_fou_4">
+                                    <input type="hidden" id="search_servant_ce_4">
+                                    <input type="hidden" id="servant_No_4">
+                                    <input type="hidden" id="servant_Name_4">
+                                    <input type="hidden" id="servant_class_4">
+                                    <input type="hidden" id="servant_rare_4">
+                                    <input type="hidden" id="servant_NA_4">
+                                    <input type="hidden" id="servant_SW_4">
+                                    <input type="hidden" id="servant_AHIT_4">
+                                    <input type="hidden" id="servant_QHIT_4">
+                                    <input type="hidden" id="servant_BHIT_4">
+                                    <input type="hidden" id="servant_EXHIT_4">
+                                    <input type="hidden" id="servant_NHIT_4">
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ATK</th>
+                            <td colspan="7">
+                                <input type="number" id="atk_4" max="99999" min="0" step="500" class="form-control atk" placeholder="0">
                             </td>
                         </tr>
                         <tr class="align-middle">
@@ -1129,12 +1281,14 @@
                         </tr>
                         <tr>
                             <th>攻撃<br>バフ</th>
-                            <td colspan="7"><input type="number" id="atk_buff_4" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <td colspan="3"><input type="number" id="atk_buff_4" max="400" min="-100" step="10" class="form-control atk_buff" placeholder="0"></td>
+                            <th>防御<br>デバフ</th>
+                            <td colspan="3"><input type="number" id="def_debuff_4" max="100" min="-100" step="10" class="form-control def_debuff" placeholder="0"></td>
                         </tr>
                         <tr>
-                            <th>Bバフ</tg>
+                            <th>Bバフ</th>
                             <td colspan="3"><input type="number" id="b_card_buff_4" max="400" min="-100" step="10" class="form-control b_card_buff" placeholder="0"></td>
-                            <th>Bクリ<br>バフ</tg>
+                            <th>Bクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="b_card_cri_buff_4" max="500" min="-100" step="10" class="form-control b_card_cri_buff" placeholder="0"></td>
                         </tr>
                         <tr>
@@ -1148,6 +1302,13 @@
                             <td colspan="3"><input type="number" id="q_card_buff_4" max="400" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
                             <th>Qクリ<br>バフ</th>
                             <td colspan="3"><input type="number" id="q_card_cri_buff_4" max="500" min="-100" step="10" class="form-control q_card_cri_buff" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <th>デバフ<br>B/A/Q</th>
+                            <td colspan="2"><input type="number" id="b_card_debuff_4" max="9999" min="-100" step="10" class="form-control b_card_debuff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="a_card_debuff_4" max="9999" min="-100" step="10" class="form-control a_card_buff" placeholder="0"></td>
+                            <td colspan="2"><input type="number" id="q_card_debuff_4" max="9999" min="-100" step="10" class="form-control q_card_buff" placeholder="0"></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>クリ<br>バフ</th>
@@ -1417,6 +1578,121 @@
                                 </tr>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- サーヴァント検索 -->
+            <div class="modal fade" id="search-modal" tabindex="-1" aria-labelledby="search-text" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="search-text">サーヴァント検索</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">クラス</span>
+                                <select class="form-select servarnt-search-select" tabindex="-1" id="servant-class">
+                                    <option value="剣" selected>剣</option>
+                                    <option value="弓">弓</option>
+                                    <option value="槍">槍</option>
+                                    <option value="騎">騎</option>
+                                    <option value="術">術</option>
+                                    <option value="殺">殺</option>
+                                    <option value="狂">狂</option>
+                                    <option value="盾">盾</option>
+                                    <option value="裁">裁</option>
+                                    <option value="讐">讐</option>
+                                    <option value="月">月</option>
+                                    <option value="分">分</option>
+                                    <option value="降">降</option>
+                                    <option value="詐">詐</option>
+                                </select>
+                                <span class="input-group-text">レア</span>
+                                <select class="form-select servarnt-search-select" tabindex="-1" id="servant-rare">
+                                    <option value="5" selected>5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                    <option value="0">0</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">サーヴァント</span>
+                                <select class="form-select text-start" tabindex="-1" id="servant-name">
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">レベル</span>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="rdo_lvl" id="radio_lvlMax" value="MAX" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="radio_lvlMax">MAX</label>
+                                    <input type="radio" class="btn-check" name="rdo_lvl" id="radio_lvl100" value="100" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_lvl100">100</label>
+                                    <input type="radio" class="btn-check" name="rdo_lvl" id="radio_lvl110" value="110" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_lvl110">110</label>
+                                    <input type="radio" class="btn-check" name="rdo_lvl" id="radio_lvl120" value="120" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_lvl120">120</label>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">宝具</span>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="rdo_np_lvl" id="radio_nplvl_1" value="1" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_nplvl_1">Lv.1</label>
+                                    <input type="radio" class="btn-check" name="rdo_np_lvl" id="radio_nplvl_2" value="2" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_nplvl_2">Lv.2</label>
+                                    <input type="radio" class="btn-check" name="rdo_np_lvl" id="radio_nplvl_3" value="3" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_nplvl_3">Lv.3</label>
+                                    <input type="radio" class="btn-check" name="rdo_np_lvl" id="radio_nplvl_4" value="4" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_nplvl_4">Lv.4</label>
+                                    <input type="radio" class="btn-check" name="rdo_np_lvl" id="radio_nplvl_5" value="5" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="radio_nplvl_5">Lv.5</label>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">フォウ</span>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="rdo_fou" id="radio_fou_0" value="0" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_fou_0">0</label>
+                                    <input type="radio" class="btn-check" name="rdo_fou" id="radio_fou_1000" value="1000" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="radio_fou_1000">1000</label>
+                                    <input type="radio" class="btn-check" name="rdo_fou" id="radio_fou_2000" value="2000" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_fou_2000">2000</label>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">礼装</span>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="rdo_ce" id="radio_ce_atk_0" value="0" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_ce_atk_0">0</label>
+                                    <input type="radio" class="btn-check" name="rdo_ce" id="radio_ce_atk_100" value="100" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_ce_atk_100">100</label>
+                                    <input type="radio" class="btn-check" name="rdo_ce" id="radio_ce_atk_1000" value="1000" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_ce_atk_1000">1000</label>
+                                    <input type="radio" class="btn-check" name="rdo_ce" id="radio_ce_atk_2000" value="2000" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="radio_ce_atk_2000">2000</label>
+                                    <input type="radio" class="btn-check" name="rdo_ce" id="radio_ce_atk_2400" value="2400" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_ce_atk_2400">2400</label>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">バフ</span>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="rdo_buff" id="radio_buff_auto" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="radio_nplvl1">自動</label>
+                                    <input type="radio" class="btn-check" name="rdo_buff" id="radio_buff_manual" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="radio_nplvl2">手動</label>
+                                </div>
+                            </div>
+                            -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="btnSelected">選択</button>
+                          </div>
                     </div>
                 </div>
             </div>
