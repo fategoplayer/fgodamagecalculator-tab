@@ -447,16 +447,16 @@ $(function(){
                         $("#q_card_buff_" + tabNumber).val(this["クラススキル_Qバフ"]);
                     }
                     // クラススキル_クリティカル
-                    if (this["クラススキル_クリバフ"] != "") {
+                    if (this["クラススキル_クリバフ"] != "0") {
                         $("#cri_buff_" + tabNumber).val(this["クラススキル_クリバフ"]);
                     }
-                    if (this["クラススキル_Bクリバフ"] != "") {
+                    if (this["クラススキル_Bクリバフ"] != "0") {
                         $("#b_card_cri_buff_" + tabNumber).val(this["クラススキル_Bクリバフ"]);
                     }
-                    if (this["クラススキル_Aクリバフ"] != "") {
+                    if (this["クラススキル_Aクリバフ"] != "0") {
                         $("#a_card_cri_buff_" + tabNumber).val(this["クラススキル_Aクリバフ"]);
                     }
-                    if (this["クラススキル_Qクリバフ"] != "") {
+                    if (this["クラススキル_Qクリバフ"] != "0") {
                         $("#q_card_cri_buff_" + tabNumber).val(this["クラススキル_Qクリバフ"]);
                     }
                     // クラススキル_宝具
